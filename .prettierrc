@@ -11,7 +11,21 @@
         "classnames",
         "twMerge"
     ],
+    "importOrderSeparation": true,
+    "importOrderCaseInsensitive": true,
+    "importOrder": [
+        "^react",
+        "^@react",
+        "^[^@/\\.][^/\\.]*$",
+        "^@(?!/)|^[a-zA-Z]",
+        "^@(?=/)",
+        "^..(?!.*(css|scss)$).*$",
+        "^.(?!.*(css|scss)$).*$",
+        "module.s?css$",
+        "s?css$"
+    ],
     "plugins": [
+        "@trivago/prettier-plugin-sort-imports",
         "prettier-plugin-tailwindcss"
     ]
 }
