@@ -5,6 +5,7 @@ import {
   useControllerStore,
   useElementStore,
 } from "./core/controller";
+import { SequenceList } from "./core/sequence";
 import { MatrixLayout } from "./layout";
 
 function App() {
@@ -12,10 +13,12 @@ function App() {
   useController();
 
   const playing = useControllerStore((state) => state.playing);
+  const sequence = useControllerStore((state) => state.sequence);
   const settings = useControllerStore((state) => state.settings);
   const start = useControllerStore((state) => state.start);
   const stop = useControllerStore((state) => state.stop);
   const updateTempo = useControllerStore((state) => state.updateTempo);
+  const updateSequence = useControllerStore((state) => state.updateSequence);
 
   const elements = useElementStore((state) => state.elementMap);
 
@@ -52,6 +55,19 @@ function App() {
           +
         </button>
       </div>
+
+      <div className="flex gap-2">
+        {SequenceList.map((item) => (
+          <button
+            key={item.key}
+            className={`text-blue-500 ${item.key === sequence ? "underline" : ""}`}
+            onClick={() => updateSequence(item.key)}
+          >
+            {item.key}
+          </button>
+        ))}
+      </div>
+
       <button className="text-blue-500 underline" onClick={getRandomLayout}>
         Random
       </button>
