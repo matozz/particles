@@ -6,16 +6,20 @@ import { UseBindElementHook } from "./types";
 
 export const useController = () => {
   const playing = useControllerStore((state) => state.playing);
+  const sequence = useControllerStore((state) => state.sequence);
   const settings = useControllerStore((state) => state.settings);
   const elementGroupMap = useElementStore((state) => state.elementGroupMap);
 
   const timerRef = useRef<number>();
   const { start, stop } = useScheduler(settings.interval, {
     onTick: ({ stopRef }) => {
-      const { type, groups } = elementGroupMap["spread"];
+      if (!elementGroupMap[sequence]) {
+        return;
+      }
+
+      const { type, groups } = elementGroupMap[sequence];
 
       const elementGroup = type === "static" ? groups : groups();
-
       const tick = settings.interval / elementGroup.length;
 
       for (const [i, elements] of elementGroup.entries()) {

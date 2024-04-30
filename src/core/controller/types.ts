@@ -27,6 +27,8 @@ export type ControllerSettings = {
   interval: number;
 };
 
+export type ControllerUpdateSequenceFn = (sequence: string) => void;
+
 export type ControllerUpdateSettingsFn = (
   settings: Partial<ControllerSettings>,
 ) => void;
@@ -35,7 +37,9 @@ export type ControllerUpdateTempoFn = (tempo: number) => void;
 
 export type ControllerStore = {
   playing: boolean;
+  sequence: string;
   settings: ControllerSettings;
+  updateSequence: ControllerUpdateSequenceFn;
   updateTempo: ControllerUpdateTempoFn;
   updateSettings: ControllerUpdateSettingsFn;
 } & SchedulerHookReturn;

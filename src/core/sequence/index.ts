@@ -48,7 +48,7 @@ export const SequenceList: SequenceItem[] = [
     key: "flash",
     data: (elementList: ElementInfo[]) => {
       const getGroups = () => [
-        getRandomElements(elementList, Math.round(elementList.length / 3)),
+        getRandomElements(elementList, Math.round(elementList.length / 4)),
       ];
       return { type: "dynamic", groups: getGroups };
     },

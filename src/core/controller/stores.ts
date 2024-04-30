@@ -41,12 +41,14 @@ export const useElementStore = create<ElementStore>((set) => ({
 
 export const useControllerStore = create<ControllerStore>((set) => ({
   playing: false,
+  sequence: "flow",
   settings: {
     interval: 500,
     tempo: 120,
   },
   start: () => set((state) => ({ ...state, playing: true })),
   stop: () => set((state) => ({ ...state, playing: false })),
+  updateSequence: (sequence) => set((state) => ({ ...state, sequence })),
   updateSettings: (settings) =>
     set((state) => ({
       ...state,
