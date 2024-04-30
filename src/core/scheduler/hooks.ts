@@ -6,15 +6,10 @@ export const useScheduler: SchedulerHook = (interval, options) => {
   const { onTick } = options || {};
 
   const worker = useRef<Worker>();
+  const stopRef = useRef(false);
 
   useEffect(() => {
     const timeWorker = new Worker(new URL("./worker.ts", import.meta.url));
-
-    // timeWorker.onmessage = (e) => {
-    //   if (e.data === "tick") {
-    //     onTick?.();
-    //   }
-    // };
 
     worker.current = timeWorker;
 
@@ -27,7 +22,7 @@ export const useScheduler: SchedulerHook = (interval, options) => {
     if (worker.current) {
       worker.current.onmessage = (e) => {
         if (e.data === "tick") {
-          onTick?.();
+          onTick?.({ stopRef });
         }
       };
     }
@@ -39,10 +34,12 @@ export const useScheduler: SchedulerHook = (interval, options) => {
 
   const start = useCallback(() => {
     worker.current?.postMessage({ action: "start", interval });
+    stopRef.current = false;
   }, [interval]);
 
   const stop = useCallback(() => {
     worker.current?.postMessage({ action: "stop" });
+    stopRef.current = true;
   }, []);
 
   return { start, stop };

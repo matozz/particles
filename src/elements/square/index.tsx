@@ -6,6 +6,8 @@ import { ElementInfo, useBindElement } from "@/core/controller";
 
 import { BaseElementProps } from "../types";
 
+import "./index.css";
+
 const SquareElement: FC<BaseElementProps> = memo((props) => {
   const { x, y } = props;
 
@@ -20,7 +22,8 @@ const SquareElement: FC<BaseElementProps> = memo((props) => {
       callback: ({ tempo }) => {
         const duration = Number((60 / tempo).toFixed(3));
         controls.start({
-          scale: [2, 1],
+          // scale: [1, 1.4, 1, 1],
+          opacity: [0, 1, 1, 0],
           transition: { duration, ease: [0, 1, 0.6, 1] },
         });
       },
@@ -31,14 +34,19 @@ const SquareElement: FC<BaseElementProps> = memo((props) => {
   useBindElement(id, elementInfo);
 
   return (
-    <motion.div
-      initial={{ scale: 1 }}
-      animate={controls}
-      className="rounded-mdp-2 flex h-12 w-12 items-center justify-center text-3xl"
-    >
-      {/* {`[${x},${y}]`} */}
-      💡
-    </motion.div>
+    <div className="square-element flex h-8 w-8 items-center justify-center rounded-full p-2 text-xl">
+      <motion.div
+        initial={{
+          // scale: 1,
+          opacity: 0,
+        }}
+        animate={controls}
+        className="square-color"
+      >
+        {/* {`[${x},${y}]`} */}
+        {/* 💡 */}
+      </motion.div>
+    </div>
   );
 });
 

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import { SequenceList } from "../sequences";
+import { SequenceList } from "../sequence";
 import {
   ControllerStore,
   ElementInfo,
@@ -8,12 +8,14 @@ import {
   ElementStore,
 } from "./types";
 
-const processElements = (elementMap: Map<string, ElementInfo>) => {
+const processElements = (
+  elementMap: Map<string, ElementInfo>,
+): Pick<ElementStore, "elementList" | "elementGroupMap"> => {
   const elementList = Array.from(elementMap.values());
 
   const elementGroupMap = SequenceList.reduce<ElementGroupMap>((acc, cur) => {
-    const { type, data } = cur;
-    acc[type] = data(elementList);
+    const { key, data } = cur;
+    acc[key] = data(elementList);
     return acc;
   }, {});
 

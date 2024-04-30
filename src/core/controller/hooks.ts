@@ -11,17 +11,27 @@ export const useController = () => {
 
   const timerRef = useRef<number>();
   const { start, stop } = useScheduler(settings.interval, {
-    onTick: () => {
-      const elementGroup = elementGroupMap["reverse_flow"];
+    onTick: ({ stopRef }) => {
+      const { type, groups } = elementGroupMap["spread"];
 
-      const _tick = settings.interval / elementGroup.length;
+      const elementGroup = type === "static" ? groups : groups();
+
+      const tick = settings.interval / elementGroup.length;
 
       for (const [i, elements] of elementGroup.entries()) {
-        setTimeout(() => {
+        if (i === 0) {
           for (const element of elements) {
             element.callback(settings);
           }
-        }, _tick * i);
+        } else {
+          setTimeout(() => {
+            if (!stopRef.current) {
+              for (const element of elements) {
+                element.callback(settings);
+              }
+            }
+          }, tick * i);
+        }
       }
 
       if (!timerRef.current) {
