@@ -55,15 +55,16 @@ export const groupElementsByAxis = (
 
 export const groupElementsByDistance = (elements: ElementInfo[]) => {
   const centroid = calculateCentroid(elements);
+
   const distanceGroups = new Map<number, ElementInfo[]>();
 
   elements.forEach((element) => {
     const distance = distanceFromCentroid(element, centroid);
-    if (distanceGroups.has(distance)) {
-      distanceGroups.get(distance)?.push(element);
-    } else {
+
+    if (!distanceGroups.has(distance)) {
       distanceGroups.set(distance, []);
     }
+    distanceGroups.get(distance)?.push(element);
   });
 
   const groupedElements = Array.from(distanceGroups)

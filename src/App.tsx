@@ -22,15 +22,15 @@ function App() {
   const [layout, setLayout] = useState({ columns: 9, rows: 5 });
 
   const getRandomLayout = () => {
-    const columns = Math.floor(Math.random() * 10) + 3;
-    const rows = Math.floor(Math.random() * 6) + 2;
+    const columns = Math.floor(Math.random() * 15) + 3;
+    const rows = Math.floor(Math.random() * 10) + 2;
     setLayout({ columns, rows });
   };
 
   useEffect(() => console.log(elements), [elements]);
 
   return (
-    <div className="flex flex-col items-center justify-center gap-5 p-10">
+    <div className="flex h-screen flex-col items-center justify-center gap-5 bg-[#111] p-10">
       <div className="flex gap-5">
         <button
           className="text-blue-500 underline"
@@ -38,7 +38,7 @@ function App() {
         >
           {playing ? "Pause" : "Play"}
         </button>
-        <div>{settings.tempo}</div>
+        <div className="text-white">{settings.tempo}</div>
         <button
           className="text-blue-500 underline"
           onClick={() => updateTempo(settings.tempo - 10)}

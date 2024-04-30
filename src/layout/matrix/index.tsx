@@ -2,6 +2,8 @@ import { memo, useCallback } from "react";
 
 import SquareElement from "@/elements/square";
 
+import "./index.css";
+
 interface MatrixProps {
   rows: number;
   columns: number;
@@ -22,8 +24,10 @@ const Matrix: React.FC<MatrixProps> = memo((props) => {
 
   return (
     <div
-      className="grid justify-start gap-2"
-      style={{ gridTemplateColumns: `repeat(${columns}, auto)` }}
+      className="matrix-layout grid justify-start gap-3 bg-[#222] p-3"
+      style={{
+        gridTemplateColumns: `repeat(${columns}, auto)`,
+      }}
     >
       {generateMatrix()}
     </div>

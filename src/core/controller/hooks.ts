@@ -11,8 +11,8 @@ export const useController = () => {
 
   const timerRef = useRef<number>();
   const { start, stop } = useScheduler(settings.interval, {
-    onTick: () => {
-      const { type, groups } = elementGroupMap["rotate"];
+    onTick: ({ stopRef }) => {
+      const { type, groups } = elementGroupMap["spread"];
 
       const elementGroup = type === "static" ? groups : groups();
 
@@ -25,8 +25,10 @@ export const useController = () => {
           }
         } else {
           setTimeout(() => {
-            for (const element of elements) {
-              element.callback(settings);
+            if (!stopRef.current) {
+              for (const element of elements) {
+                element.callback(settings);
+              }
             }
           }, tick * i);
         }
