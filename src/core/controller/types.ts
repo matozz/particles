@@ -8,7 +8,11 @@ export type ElementInfo = { x: number; y: number; callback: ElementCallback };
 export type ElementBindFn = (id: string, elementInfo: ElementInfo) => void;
 export type ElementUnBindFn = (id: string) => void;
 
-export type ElementGroupMap = Record<string, ElementInfo[][]>;
+export type ElementGroupMeta =
+  | { type: "static"; groups: ElementInfo[][] }
+  | { type: "dynamic"; groups: () => ElementInfo[][] };
+
+export type ElementGroupMap = Record<string, ElementGroupMeta>;
 
 export type ElementStore = {
   elementMap: Map<string, ElementInfo> | undefined;

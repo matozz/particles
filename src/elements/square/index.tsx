@@ -20,7 +20,7 @@ const SquareElement: FC<BaseElementProps> = memo((props) => {
       callback: ({ tempo }) => {
         const duration = Number((60 / tempo).toFixed(3));
         controls.start({
-          scale: [2, 1],
+          scale: [1, 1.4, 1, 1],
           transition: { duration, ease: [0, 1, 0.6, 1] },
         });
       },
@@ -34,7 +34,7 @@ const SquareElement: FC<BaseElementProps> = memo((props) => {
     <motion.div
       initial={{ scale: 1 }}
       animate={controls}
-      className="rounded-mdp-2 flex h-12 w-12 items-center justify-center text-3xl"
+      className="flex h-12 w-12 items-center justify-center rounded-xl p-2 text-3xl"
     >
       {/* {`[${x},${y}]`} */}
       💡

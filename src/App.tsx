@@ -19,11 +19,11 @@ function App() {
 
   const elements = useElementStore((state) => state.elementMap);
 
-  const [layout, setLayout] = useState({ columns: 10, rows: 5 });
+  const [layout, setLayout] = useState({ columns: 9, rows: 5 });
 
   const getRandomLayout = () => {
     const columns = Math.floor(Math.random() * 10) + 3;
-    const rows = Math.floor(Math.random() * 4) + 2;
+    const rows = Math.floor(Math.random() * 6) + 2;
     setLayout({ columns, rows });
   };
 
