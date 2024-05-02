@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 
 import { useScheduler } from "../scheduler";
 import { useControllerStore, useElementStore } from "./stores";
-import { UseBindElementHook } from "./types";
+import { BindElementHook } from "./types";
 
 export const useController = () => {
   const playing = useControllerStore((state) => state.playing);
@@ -10,9 +10,10 @@ export const useController = () => {
   const settings = useControllerStore((state) => state.settings);
   const elementGroupMap = useElementStore((state) => state.elementGroupMap);
 
-  const timerRef = useRef<number>();
+  const timeoutsRef = useRef<NodeJS.Timeout[]>([]);
+
   const { start, stop } = useScheduler(settings.interval, {
-    onTick: ({ stopRef }) => {
+    onTick: () => {
       if (!elementGroupMap[sequence]) {
         return;
       }
@@ -22,36 +23,40 @@ export const useController = () => {
       const elementGroup = type === "static" ? groups : groups();
       const tick = settings.interval / elementGroup.length;
 
+      // TODO: Reschedule the unexecuted actions when tempo changed during excuting a actions group.
       for (const [i, elements] of elementGroup.entries()) {
         if (i === 0) {
           for (const element of elements) {
             element.callback(settings);
           }
         } else {
-          setTimeout(() => {
-            if (!stopRef.current) {
-              for (const element of elements) {
-                element.callback(settings);
-              }
+          const timeout = setTimeout(() => {
+            for (const element of elements) {
+              element.callback(settings);
             }
           }, tick * i);
-        }
-      }
 
-      if (!timerRef.current) {
-        timerRef.current = Date.now();
-        console.log("init tick");
-      } else {
-        console.log("tick", Date.now() - timerRef.current);
-        timerRef.current = Date.now();
+          timeoutsRef.current.push(timeout);
+        }
       }
     },
   });
 
-  useEffect(() => (playing ? start() : stop()), [playing]);
+  useEffect(() => {
+    if (playing) {
+      start();
+    } else {
+      stop();
+
+      for (const id of timeoutsRef.current) {
+        clearTimeout(id);
+      }
+      timeoutsRef.current = [];
+    }
+  }, [playing]);
 };
 
-export const useBindElement: UseBindElementHook = (id, elementInfo) => {
+export const useBindElement: BindElementHook = (id, elementInfo) => {
   const bind = useElementStore((state) => state.bind);
   const unbind = useElementStore((state) => state.unbind);
   const isMountedRef = useRef(false);

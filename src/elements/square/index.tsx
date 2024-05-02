@@ -22,7 +22,6 @@ const SquareElement: FC<BaseElementProps> = memo((props) => {
       callback: ({ tempo }) => {
         const duration = Number((60 / tempo).toFixed(3));
         controls.start({
-          // scale: [1, 1.4, 1, 1],
           opacity: [0, 1, 1, 0],
           transition: { duration, ease: [0, 1, 0.6, 1] },
         });
@@ -34,18 +33,13 @@ const SquareElement: FC<BaseElementProps> = memo((props) => {
   useBindElement(id, elementInfo);
 
   return (
-    <div className="square-element flex h-8 w-8 items-center justify-center rounded-full p-2 text-xl">
+    <div className="square-element relative flex h-8 w-8 items-center justify-center rounded-full p-2">
       <motion.div
-        initial={{
-          // scale: 1,
-          opacity: 0,
-        }}
+        initial={{ opacity: 0 }}
         animate={controls}
-        className="square-color"
-      >
-        {/* {`[${x},${y}]`} */}
-        {/* 💡 */}
-      </motion.div>
+        className="square-color flex items-center justify-center text-xs"
+      />
+      {/* <div className="absolute inset-0 flex items-center justify-center text-xs text-gray-500">{`${x},${y}`}</div> */}
     </div>
   );
 });

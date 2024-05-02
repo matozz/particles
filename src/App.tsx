@@ -22,10 +22,10 @@ function App() {
 
   const elements = useElementStore((state) => state.elementMap);
 
-  const [layout, setLayout] = useState({ columns: 9, rows: 5 });
+  const [layout, setLayout] = useState({ columns: 8, rows: 8 });
 
   const getRandomLayout = () => {
-    const columns = Math.floor(Math.random() * 15) + 3;
+    const columns = Math.floor(Math.random() * 12) + 3;
     const rows = Math.floor(Math.random() * 10) + 2;
     setLayout({ columns, rows });
   };

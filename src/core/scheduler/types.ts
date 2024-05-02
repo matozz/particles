@@ -1,5 +1,5 @@
 type SchedulerHookOptions = {
-  onTick: (options: { stopRef: React.MutableRefObject<boolean> }) => void;
+  onTick: () => void;
 };
 
 export type SchedulerHookReturn = {

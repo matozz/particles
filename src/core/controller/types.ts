@@ -44,4 +44,4 @@ export type ControllerStore = {
   updateSettings: ControllerUpdateSettingsFn;
 } & SchedulerHookReturn;
 
-export type UseBindElementHook = (id: string, elementInfo: ElementInfo) => void;
+export type BindElementHook = (id: string, elementInfo: ElementInfo) => void;

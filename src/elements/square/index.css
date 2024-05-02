@@ -24,7 +24,5 @@
       transparent
     ),
     radial-gradient(circle, rgba(255, 255, 255, 0.75), transparent);
-  background-blend-mode: hard-light, color-dodge;
-  border: 0.1vmin solid currentcolor;
   box-sizing: border-box;
 }

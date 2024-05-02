@@ -5,6 +5,9 @@ export const getRandomElements = (
   num = Math.round(elements.length / 2),
 ) => [...elements].sort(() => 0.5 - Math.random()).slice(0, num);
 
+export const getReversedElementGroup = (groups: ElementInfo[][]) =>
+  [...groups].reverse();
+
 const calculateCentroid = (elements: ElementInfo[]) => {
   const sum = elements.reduce(
     (acc, coord) => {

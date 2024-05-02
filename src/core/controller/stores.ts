@@ -57,10 +57,6 @@ export const useControllerStore = create<ControllerStore>((set) => ({
   updateTempo: (tempo) =>
     set((state) => ({
       ...state,
-      settings: {
-        ...state.settings,
-        tempo,
-        interval: (60 / tempo) * 1000,
-      },
+      settings: { ...state.settings, tempo, interval: (60 / tempo) * 1000 },
     })),
 }));

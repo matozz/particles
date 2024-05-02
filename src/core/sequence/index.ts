@@ -1,6 +1,7 @@
 import { ElementGroupMeta, ElementInfo } from "../controller";
 import {
   getRandomElements,
+  getReversedElementGroup,
   groupElementsByAngle,
   groupElementsByAxis,
   groupElementsByDistance,
@@ -21,8 +22,7 @@ export const SequenceList: SequenceItem[] = [
     key: "reverse_flow",
     data: (elementList: ElementInfo[]) => {
       const groups = groupElementsByAxis(elementList, "x");
-
-      const revGroups = [...groups].reverse();
+      const revGroups = getReversedElementGroup(groups);
 
       groups.pop();
       revGroups.pop();
@@ -51,6 +51,12 @@ export const SequenceList: SequenceItem[] = [
         getRandomElements(elementList, Math.round(elementList.length / 4)),
       ];
       return { type: "dynamic", groups: getGroups };
+    },
+  },
+  {
+    key: "flick",
+    data: (elementList: ElementInfo[]) => {
+      return { type: "static", groups: [elementList] };
     },
   },
 ];
