@@ -7,21 +7,23 @@ import {
   groupElementsByDistance,
 } from "./utils";
 
-type SequenceItem = { key: string; data: SequenceItemData };
-type SequenceItemData = (elementList: ElementInfo[]) => ElementGroupMeta;
+export type SequencePreset = {
+  key: string;
+  data: (elements: ElementInfo[]) => ElementGroupMeta;
+};
 
-export const SequenceList: SequenceItem[] = [
+export const sequencePresets: SequencePreset[] = [
   {
     key: "flow",
-    data: (elementList: ElementInfo[]) => {
-      const groups = groupElementsByAxis(elementList, "x");
+    data: (elements) => {
+      const groups = groupElementsByAxis(elements, "x");
       return { type: "static", groups };
     },
   },
   {
     key: "reverse_flow",
-    data: (elementList: ElementInfo[]) => {
-      const groups = groupElementsByAxis(elementList, "x");
+    data: (elements) => {
+      const groups = groupElementsByAxis(elements, "x");
       const revGroups = getReversedElementGroup(groups);
 
       groups.pop();
@@ -32,31 +34,31 @@ export const SequenceList: SequenceItem[] = [
   },
   {
     key: "spread",
-    data: (elementList: ElementInfo[]) => {
-      const groups = groupElementsByDistance(elementList);
+    data: (elements) => {
+      const groups = groupElementsByDistance(elements);
       return { type: "static", groups };
     },
   },
   {
     key: "rotate",
-    data: (elementList: ElementInfo[]) => {
-      const groups = groupElementsByAngle(elementList);
+    data: (elements) => {
+      const groups = groupElementsByAngle(elements);
       return { type: "static", groups };
     },
   },
   {
     key: "flash",
-    data: (elementList: ElementInfo[]) => {
+    data: (elements) => {
       const getGroups = () => [
-        getRandomElements(elementList, Math.round(elementList.length / 4)),
+        getRandomElements(elements, Math.round(elements.length / 4)),
       ];
       return { type: "dynamic", groups: getGroups };
     },
   },
   {
     key: "flick",
-    data: (elementList: ElementInfo[]) => {
-      return { type: "static", groups: [elementList] };
+    data: (elements) => {
+      return { type: "static", groups: [elements] };
     },
   },
 ];

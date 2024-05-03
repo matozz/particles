@@ -1,6 +1,6 @@
 import { SchedulerHookReturn } from "../scheduler/types";
 
-export type ElementBaseState = ControllerSettings;
+export type ElementBaseState = { tempo: number };
 export type ElementCallback = (state: ElementBaseState) => void;
 
 export type ElementInfo = { x: number; y: number; callback: ElementCallback };
@@ -20,6 +20,7 @@ export type ElementStore = {
   elementGroupMap: ElementGroupMap;
   bind: ElementBindFn;
   unbind: ElementUnBindFn;
+  generate: () => void;
 };
 
 export type ControllerSettings = {
@@ -44,4 +45,8 @@ export type ControllerStore = {
   updateSettings: ControllerUpdateSettingsFn;
 } & SchedulerHookReturn;
 
-export type BindElementHook = (id: string, elementInfo: ElementInfo) => void;
+export type BindElementHook = (
+  elementId: string,
+  elementInfo: ElementInfo,
+) => void;
+export type BindLayoutHook = (layoutId: string, count: number) => void;
