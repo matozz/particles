@@ -8,8 +8,8 @@ import { BaseElementProps } from "../types";
 
 import "./index.css";
 
-const SquareElement: FC<BaseElementProps> = memo((props) => {
-  const { x, y } = props;
+const SpotlightElement: FC<BaseElementProps> = memo((props) => {
+  const { x, y, dev } = props;
 
   const controls = useAnimation();
 
@@ -33,15 +33,17 @@ const SquareElement: FC<BaseElementProps> = memo((props) => {
   useBindElement(id, elementInfo);
 
   return (
-    <div className="square-element relative flex h-8 w-8 items-center justify-center rounded-full p-2">
+    <div className="spotlight-element relative flex h-8 w-8 items-center justify-center rounded-full p-2">
       <motion.div
         initial={{ opacity: 0 }}
         animate={controls}
-        className="square-color flex items-center justify-center text-xs"
+        className="spotlight-color flex items-center justify-center text-xs"
       />
-      {/* <div className="absolute inset-0 flex items-center justify-center text-xs text-gray-500">{`${x},${y}`}</div> */}
+      {dev && (
+        <div className="absolute inset-0 flex items-center justify-center text-xs text-gray-500">{`${Math.round(x)},${Math.round(y)}`}</div>
+      )}
     </div>
   );
 });
 
-export default SquareElement;
+export default SpotlightElement;

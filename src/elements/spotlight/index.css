@@ -1,4 +1,4 @@
-.square-element {
+.spotlight-element {
   background-color: #111;
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.1),
@@ -7,7 +7,7 @@
   position: relative;
 }
 
-.square-color {
+.spotlight-color {
   color: #930;
   top: 0;
   left: 0;

@@ -1,5 +1,7 @@
 import { ElementInfo } from "../controller";
 
+const precision = 4;
+
 export const getRandomElements = (
   elements: ElementInfo[],
   num = Math.round(elements.length / 2),
@@ -62,8 +64,9 @@ export const groupElementsByDistance = (elements: ElementInfo[]) => {
   const distanceGroups = new Map<number, ElementInfo[]>();
 
   elements.forEach((element) => {
-    const distance = distanceFromCentroid(element, centroid);
-
+    const distance = Number(
+      distanceFromCentroid(element, centroid).toFixed(precision),
+    );
     if (!distanceGroups.has(distance)) {
       distanceGroups.set(distance, []);
     }
@@ -82,7 +85,7 @@ export const groupElementsByAngle = (elements: ElementInfo[]) => {
   const angleGroups = new Map<number, ElementInfo[]>();
 
   elements.forEach((element) => {
-    const angle = calculateAngle(element, centroid);
+    const angle = Number(calculateAngle(element, centroid).toFixed(precision));
     if (angleGroups.has(angle)) {
       angleGroups.get(angle)?.push(element);
     } else {
