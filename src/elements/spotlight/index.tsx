@@ -19,11 +19,14 @@ const SpotlightElement: FC<BaseElementProps> = memo((props) => {
     () => ({
       x,
       y,
-      callback: ({ tempo }) => {
-        const duration = Number((60 / tempo).toFixed(3));
+      callback: ({ transition: duration, color }) => {
+        controls.start({
+          backgroundColor: color,
+          transition: { duration: 0 },
+        });
         controls.start({
           opacity: [0, 1, 1, 0],
-          transition: { duration, ease: [0, 1, 0.6, 1] },
+          transition: { duration, ease: [0, 1, 1, 1] },
         });
       },
     }),

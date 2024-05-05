@@ -3,64 +3,7 @@ import { useEffect, useRef } from "react";
 import { useScheduler } from "../scheduler";
 import { useControllerStore, useElementStore } from "./stores";
 import { BindElementHook, BindLayoutHook, ElementBaseState } from "./types";
-
-export const useController = () => {
-  const playing = useControllerStore((state) => state.playing);
-  const settings = useControllerStore((state) => state.settings);
-
-  const timeoutsRef = useRef<NodeJS.Timeout[]>([]);
-
-  const { start, stop } = useScheduler(settings.interval, {
-    onTick: () => {
-      const sequence = useControllerStore.getState().sequence;
-      const elementGroupMap = useElementStore.getState().elementGroupMap;
-
-      if (!elementGroupMap[sequence]) {
-        return;
-      }
-
-      const { type, groups } = elementGroupMap[sequence];
-
-      // TODO: Sample element groups with excessively short trigger
-      // labels: optimization
-      const elementGroup = type === "static" ? groups : groups();
-      const tick = settings.interval / elementGroup.length;
-
-      const state: ElementBaseState = { tempo: settings.tempo };
-
-      // TODO: Reschedule the unexecuted actions when tempo changed during excuting a actions group
-      // labels: optimization
-      for (const [i, elements] of elementGroup.entries()) {
-        if (i === 0) {
-          for (const element of elements) {
-            element.callback(state);
-          }
-        } else {
-          const timeout = setTimeout(() => {
-            for (const element of elements) {
-              element.callback(state);
-            }
-          }, tick * i);
-
-          timeoutsRef.current.push(timeout);
-        }
-      }
-    },
-  });
-
-  useEffect(() => {
-    if (playing) {
-      start();
-    } else {
-      stop();
-
-      for (const id of timeoutsRef.current) {
-        clearTimeout(id);
-      }
-      timeoutsRef.current = [];
-    }
-  }, [playing]);
-};
+import { getPluginActionGroups } from "./utils";
 
 export const useBindElement: BindElementHook = (id, elementInfo) => {
   const isMountedRef = useRef(false);
@@ -95,4 +38,66 @@ export const useBindLayout: BindLayoutHook = (id, count) => {
       useElementStore.getState().generate();
     }
   }, [id, count, elementMap]);
+};
+
+export const useController = () => {
+  const playing = useControllerStore((state) => state.playing);
+  const settings = useControllerStore((state) => state.settings);
+
+  const timeoutsRef = useRef<NodeJS.Timeout[]>([]);
+
+  const { start, stop } = useScheduler(settings.interval, {
+    onTick: () => {
+      const sequence = useControllerStore.getState().sequence;
+      const sequenceMap = useElementStore.getState().sequenceMap;
+
+      if (!sequenceMap[sequence]) {
+        return;
+      }
+
+      const { type, groups } = sequenceMap[sequence];
+
+      // TODO: Sample element groups with excessively short trigger
+      // labels: optimization
+      const baseActionGroups = type === "static" ? groups : groups();
+      const actionGroups = getPluginActionGroups(baseActionGroups, settings);
+
+      const tick = settings.interval / actionGroups.length;
+
+      // TODO: Reschedule the unexecuted actions when tempo changed during excuting a actions group
+      // labels: optimization
+      for (const [i, action] of actionGroups.entries()) {
+        const state: ElementBaseState = {
+          transition: action.transition,
+          color: action.color,
+        };
+        if (i === 0) {
+          for (const element of action.groups) {
+            element.callback(state);
+          }
+        } else {
+          const timeout = setTimeout(() => {
+            for (const element of action.groups) {
+              element.callback(state);
+            }
+          }, tick * i);
+
+          timeoutsRef.current.push(timeout);
+        }
+      }
+    },
+  });
+
+  useEffect(() => {
+    if (playing) {
+      start();
+    } else {
+      stop();
+
+      for (const id of timeoutsRef.current) {
+        clearTimeout(id);
+      }
+      timeoutsRef.current = [];
+    }
+  }, [playing]);
 };

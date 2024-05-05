@@ -1,8 +1,8 @@
 import { useState } from "react";
 
 import { useController, useControllerStore } from "./core/controller";
-import { sequencePresets } from "./core/sequence";
 import { CircleLayout, MatrixLayout } from "./layout";
+import { sequencePresets, colorPresets } from "./presets";
 
 type Layout =
   | { type: "matrix"; columns: number; rows: number }
@@ -20,10 +20,13 @@ function App() {
   const playing = useControllerStore((state) => state.playing);
   const sequence = useControllerStore((state) => state.sequence);
   const settings = useControllerStore((state) => state.settings);
+
   const start = useControllerStore((state) => state.start);
   const stop = useControllerStore((state) => state.stop);
   const updateTempo = useControllerStore((state) => state.updateTempo);
   const updateSequence = useControllerStore((state) => state.updateSequence);
+  const updateColor = useControllerStore((state) => state.updateColor);
+  const updateRepeater = useControllerStore((state) => state.updateRepeater);
 
   const [layout, setLayout] = useState<Layout>(layoutPresets.matrix);
 
@@ -34,7 +37,7 @@ function App() {
       setLayout({ type: "matrix", columns, rows });
     } else {
       const rings = Math.floor(Math.random() * 3) + 3;
-      const increment = Math.floor(Math.random() * 6) + 4;
+      const increment = Math.floor(Math.random() * 3) + 4;
       setLayout({ type: "circle", rings, increment });
     }
   };
@@ -65,15 +68,45 @@ function App() {
 
       <div className="flex gap-2">
         <div className="text-white">{`sequence: `}</div>
-        {sequencePresets.map((item) => (
+        {Object.keys(sequencePresets).map((item) => (
           <button
-            key={item.key}
-            className={`text-blue-500 ${item.key === sequence ? "underline" : ""}`}
-            onClick={() => updateSequence(item.key)}
+            key={item}
+            disabled={item === sequence}
+            className={`text-blue-500 ${item === sequence ? "underline" : ""}`}
+            onClick={() => updateSequence(item)}
           >
-            {item.key}
+            {item}
           </button>
         ))}
+      </div>
+
+      <div className="flex gap-8">
+        <div className="flex gap-2">
+          <div className="text-white">{`color mode: `}</div>
+          {Object.keys(colorPresets).map((mode) => (
+            <button
+              key={mode}
+              disabled={mode === settings.color.mode}
+              className={`text-blue-500 ${mode === settings.color.mode ? "underline" : ""}`}
+              onClick={() => updateColor({ mode })}
+            >
+              {mode}
+            </button>
+          ))}
+        </div>
+        <div className="flex gap-2">
+          <div className="text-white">{`repeater: `}</div>
+          {[1, 2, 3].map((repeat) => (
+            <button
+              key={repeat}
+              disabled={repeat === settings.repeater.data}
+              className={`text-blue-500 ${repeat === settings.repeater.data ? "underline" : ""}`}
+              onClick={() => updateRepeater({ data: repeat })}
+            >
+              {repeat}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="flex gap-2">
@@ -81,6 +114,7 @@ function App() {
         {Object.values(layoutPresets).map((item) => (
           <button
             key={item.type}
+            disabled={item.type === layout.type}
             className={`text-blue-500 ${item.type === layout.type ? "underline" : ""}`}
             onClick={() => setLayout(item)}
           >
