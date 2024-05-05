@@ -1,4 +1,4 @@
-import { ElementInfo } from "../controller";
+import { ElementActionGroups, ElementInfo } from "@/core/controller";
 
 const precision = 4;
 
@@ -9,6 +9,9 @@ export const getRandomElements = (
 
 export const getReversedElementGroup = (groups: ElementInfo[][]) =>
   [...groups].reverse();
+
+export const getActionGroups = (groups: ElementInfo[][]): ElementActionGroups =>
+  groups.map((v) => ({ groups: v }));
 
 const calculateCentroid = (elements: ElementInfo[]) => {
   const sum = elements.reduce(
