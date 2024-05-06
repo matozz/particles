@@ -35,11 +35,12 @@ export const useElementStore = create<ElementStore>((set) => ({
 export const useControllerStore = create<ControllerStore>((set) => ({
   playing: false,
   sequence: "flow",
+  plugins: ["color", "repeater", "stepper"],
   settings: {
     ...getTempoSetting(170),
     ...getColorSetting("gradient", ["#0000ff", "#800080", "#0000ff"]),
     ...getRepeaterSetting("static", 1),
-    ...getStepperSetting("single"),
+    ...getStepperSetting("none"),
   },
   start: () => set((state) => mergeState(state, { playing: true })),
   stop: () => set((state) => mergeState(state, { playing: false })),
@@ -57,6 +58,12 @@ export const useControllerStore = create<ControllerStore>((set) => ({
       const { repeater } = state.settings;
       return mergeSettings(state, getRepeaterSetting(mode, data, repeater));
     }),
+  updateStepper: ({ mode, data }) =>
+    set((state) => {
+      const { stepper } = state.settings;
+      return mergeSettings(state, getStepperSetting(mode, data, stepper));
+    }),
+  updatePlugins: (plugins) => set((state) => mergeState(state, { plugins })),
 }));
 
 export const usePluginStore = create<PluginStore>((set) => ({

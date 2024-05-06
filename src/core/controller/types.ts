@@ -54,12 +54,16 @@ export type ControllerPluginSettings = {
   stepper: ControllerPluginSetting<number[]>;
 };
 
+export type ControllerPlugins = (keyof ControllerPluginSettings)[];
+
 export type ControllerSettings = {
   tempo: number;
   interval: number;
 } & ControllerPluginSettings;
 
 export type ControllerUpdateSequenceFn = (sequence: string) => void;
+
+export type ControllerUpdatePluginsFn = (plugins: ControllerPlugins) => void;
 
 export type ControllerUpdateSettingsFn = (
   settings: Partial<ControllerSettings>,
@@ -72,16 +76,22 @@ export type ControllerUpdateColorFn = (
 export type ControllerUpdateRepeaterFn = (
   data: Partial<ControllerPluginSetting<number>>,
 ) => void;
+export type ControllerUpdateStepperFn = (
+  data: Partial<ControllerPluginSetting<number[]>>,
+) => void;
 
 export type ControllerStore = {
   playing: boolean;
   sequence: string;
   settings: ControllerSettings;
+  plugins: ControllerPlugins;
   updateSequence: ControllerUpdateSequenceFn;
   updateTempo: ControllerUpdateTempoFn;
   updateColor: ControllerUpdateColorFn;
   updateRepeater: ControllerUpdateRepeaterFn;
+  updateStepper: ControllerUpdateStepperFn;
   updateSettings: ControllerUpdateSettingsFn;
+  updatePlugins: ControllerUpdatePluginsFn;
 } & SchedulerHookReturn;
 
 export type PluginStore = {

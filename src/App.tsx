@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useController, useControllerStore } from "./core/controller";
 import { CircleLayout, MatrixLayout } from "./layout";
 import { sequencePresets, colorPresets } from "./presets";
+import { stepperPresets } from "./presets/stepper";
 
 type Layout =
   | { type: "matrix"; columns: number; rows: number }
@@ -27,6 +28,7 @@ function App() {
   const updateSequence = useControllerStore((state) => state.updateSequence);
   const updateColor = useControllerStore((state) => state.updateColor);
   const updateRepeater = useControllerStore((state) => state.updateRepeater);
+  const updateStepper = useControllerStore((state) => state.updateStepper);
 
   const [layout, setLayout] = useState<Layout>(layoutPresets.matrix);
 
@@ -109,18 +111,34 @@ function App() {
         </div>
       </div>
 
-      <div className="flex gap-2">
-        <div className="text-white">{`layout: `}</div>
-        {Object.values(layoutPresets).map((item) => (
-          <button
-            key={item.type}
-            disabled={item.type === layout.type}
-            className={`text-blue-500 ${item.type === layout.type ? "underline" : ""}`}
-            onClick={() => setLayout(item)}
-          >
-            {item.type}
-          </button>
-        ))}
+      <div className="flex gap-8">
+        <div className="flex gap-2">
+          <div className="text-white">{`layout: `}</div>
+          {Object.values(layoutPresets).map((item) => (
+            <button
+              key={item.type}
+              disabled={item.type === layout.type}
+              className={`text-blue-500 ${item.type === layout.type ? "underline" : ""}`}
+              onClick={() => setLayout(item)}
+            >
+              {item.type}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex gap-2">
+          <div className="text-white">{`stepper: `}</div>
+          {Object.keys(stepperPresets).map((mode) => (
+            <button
+              key={mode}
+              disabled={mode === settings.stepper.mode}
+              className={`text-blue-500 ${mode === settings.stepper.mode ? "underline" : ""}`}
+              onClick={() => updateStepper({ mode })}
+            >
+              {mode}
+            </button>
+          ))}
+        </div>
       </div>
 
       <button className="text-blue-500 underline" onClick={getRandomLayout}>

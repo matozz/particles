@@ -81,6 +81,7 @@ export const usePlugin = (use: (keyof ControllerPluginSettings)[]) => {
 export const useController = () => {
   const playing = useControllerStore((state) => state.playing);
   const settings = useControllerStore((state) => state.settings);
+  const plugins = useControllerStore((state) => state.plugins);
 
   const timeoutsRef = useRef<NodeJS.Timeout[]>([]);
 
@@ -88,7 +89,7 @@ export const useController = () => {
     tick: pluginTick,
     reset: pluginReset,
     getActionConfig,
-  } = usePlugin(["color", "repeater"]);
+  } = usePlugin(plugins);
 
   const { start, stop } = useScheduler(settings.interval, {
     onTick: () => {
