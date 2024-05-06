@@ -1,11 +1,12 @@
 import { create } from "zustand";
 
-import { ControllerStore, ElementStore } from "./types";
+import { ControllerStore, ElementStore, PluginStore } from "./types";
 import {
   getElementExtraStates,
   getTempoSetting,
   getColorSetting,
   getRepeaterSetting,
+  getStepperSetting,
   mergeSettings,
   mergeState,
 } from "./utils";
@@ -38,6 +39,7 @@ export const useControllerStore = create<ControllerStore>((set) => ({
     ...getTempoSetting(170),
     ...getColorSetting("gradient", ["#0000ff", "#800080", "#0000ff"]),
     ...getRepeaterSetting("static", 1),
+    ...getStepperSetting("single"),
   },
   start: () => set((state) => mergeState(state, { playing: true })),
   stop: () => set((state) => mergeState(state, { playing: false })),
@@ -55,4 +57,15 @@ export const useControllerStore = create<ControllerStore>((set) => ({
       const { repeater } = state.settings;
       return mergeSettings(state, getRepeaterSetting(mode, data, repeater));
     }),
+}));
+
+export const usePluginStore = create<PluginStore>((set) => ({
+  position: 1,
+  skipCount: 0,
+  setSkipCount: (skipCount) => set((state) => mergeState(state, { skipCount })),
+  skip: () =>
+    set((state) => mergeState(state, { skipCount: state.skipCount - 1 })),
+  tick: () =>
+    set((state) => mergeState(state, { position: state.position + 1 })),
+  reset: () => set((state) => mergeState(state, { position: 1, skipCount: 0 })),
 }));

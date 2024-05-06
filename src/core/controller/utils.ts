@@ -1,11 +1,10 @@
-import { sequencePresets, colorPresets, repeaterPresets } from "@/presets";
+import { sequencePresets } from "@/presets";
 
 import {
   ElementInfo,
   ElementStore,
   ElementSequenceMap,
   ControllerSettings,
-  ElementActionGroups,
   ControllerStore,
   ControllerPluginSetting,
 } from "./types";
@@ -28,18 +27,6 @@ export const getElementExtraStates = (
   }, {});
 
   return { elementList, sequenceMap };
-};
-
-export const getPluginActionGroups = (
-  actionGroups: ElementActionGroups,
-  settings: ControllerSettings,
-) => {
-  const { color, repeater } = settings;
-
-  actionGroups = colorPresets[color.mode].data(actionGroups, settings);
-  actionGroups = repeaterPresets[repeater.mode].data(actionGroups, settings);
-
-  return actionGroups;
 };
 
 export const mergeState = <T>(state: T, values: Partial<T>): T => ({
@@ -92,5 +79,24 @@ export function getRepeaterSetting(
 ) {
   return {
     repeater: { mode: mode || fallback?.mode, data: repeat || fallback?.data },
+  };
+}
+
+export function getStepperSetting(
+  mode: string,
+  list?: number[],
+): { stepper: ControllerPluginSetting<number[]> };
+export function getStepperSetting(
+  mode: string | undefined,
+  list: number[] | undefined,
+  fallback: ControllerPluginSetting<number[]>,
+): { stepper: ControllerPluginSetting<number[]> };
+export function getStepperSetting(
+  mode: string | undefined,
+  list: number[] | undefined,
+  fallback?: ControllerPluginSetting<number[]>,
+) {
+  return {
+    stepper: { mode: mode || fallback?.mode, data: list || fallback?.data },
   };
 }

@@ -11,11 +11,25 @@ export type ElementInfo = { x: number; y: number; callback: ElementCallback };
 export type ElementBindFn = (id: string, elementInfo: ElementInfo) => void;
 export type ElementUnBindFn = (id: string) => void;
 
-export type ElementActionGroups = {
+export type ElementActionGroup = {
   groups: ElementInfo[];
   color?: string;
   transition?: number;
-}[];
+};
+
+export type ElementActionGroups = ElementActionGroup[];
+
+export type ElementActionSetting = {
+  actionGroups: ElementActionGroups;
+  skip: boolean;
+};
+
+export type BasePresetSetting = {
+  data: (
+    config: ElementActionSetting,
+    settings: ControllerSettings,
+  ) => ElementActionSetting;
+};
 
 export type ElementSequence =
   | { type: "static"; groups: ElementActionGroups }
@@ -34,12 +48,16 @@ export type ElementStore = {
 
 export type ControllerPluginSetting<T> = { mode: string; data: T };
 
+export type ControllerPluginSettings = {
+  color: ControllerPluginSetting<string[]>;
+  repeater: ControllerPluginSetting<number>;
+  stepper: ControllerPluginSetting<number[]>;
+};
+
 export type ControllerSettings = {
   tempo: number;
   interval: number;
-  color: ControllerPluginSetting<string[]>;
-  repeater: ControllerPluginSetting<number>;
-};
+} & ControllerPluginSettings;
 
 export type ControllerUpdateSequenceFn = (sequence: string) => void;
 
@@ -65,6 +83,15 @@ export type ControllerStore = {
   updateRepeater: ControllerUpdateRepeaterFn;
   updateSettings: ControllerUpdateSettingsFn;
 } & SchedulerHookReturn;
+
+export type PluginStore = {
+  position: number;
+  skipCount: number;
+  setSkipCount: (count: number) => void;
+  skip: () => void;
+  tick: () => void;
+  reset: () => void;
+};
 
 export type BindElementHook = (
   elementId: string,

@@ -1,35 +1,42 @@
-import { ControllerSettings, ElementActionGroups } from "@/core/controller";
+import { BasePresetSetting } from "@/core/controller";
 
 import { getGradientColors } from "./utils";
 
-export type ColorPreset = {
-  data: (
-    actionGroups: ElementActionGroups,
-    settings: ControllerSettings,
-  ) => ElementActionGroups;
-};
-
-export const colorPresets: Record<string, ColorPreset> = {
+export const colorPresets: Record<string, BasePresetSetting> = {
   static: {
-    data: (actionGroups, settings) => {
+    data: (config, settings) => {
       const { data: colors } = settings.color;
-      return actionGroups.map(({ groups }) => ({ color: colors[0], groups }));
+      const { actionGroups } = config;
+
+      config.actionGroups = actionGroups.map(({ groups }) => ({
+        color: colors[0],
+        groups,
+      }));
+
+      return config;
     },
   },
   gradient: {
-    data: (actionGroups, settings) => {
+    data: (config, settings) => {
       const { data: colors } = settings.color;
+      const { actionGroups } = config;
+
       if (colors.length > 1) {
         const maxOffset = actionGroups.length;
         const gradientColors = getGradientColors(colors, maxOffset + 1);
 
-        return actionGroups.map(({ groups }, i) => ({
+        config.actionGroups = actionGroups.map(({ groups }, i) => ({
           color: gradientColors[i],
           groups,
         }));
       } else {
-        return actionGroups.map(({ groups }) => ({ color: colors[0], groups }));
+        config.actionGroups = actionGroups.map(({ groups }) => ({
+          color: colors[0],
+          groups,
+        }));
       }
+
+      return config;
     },
   },
 };

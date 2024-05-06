@@ -9,7 +9,7 @@ type Layout =
   | { type: "circle"; rings: number; increment: number };
 
 const layoutPresets: Record<Layout[keyof Layout], Layout> = {
-  matrix: { type: "matrix", columns: 8, rows: 8 },
+  matrix: { type: "matrix", columns: 12, rows: 6 },
   circle: { type: "circle", rings: 4, increment: 6 },
 };
 
@@ -32,8 +32,8 @@ function App() {
 
   const getRandomLayout = () => {
     if (layout.type === "matrix") {
-      const columns = Math.floor(Math.random() * 12) + 3;
-      const rows = Math.floor(Math.random() * 10) + 2;
+      const columns = Math.floor(Math.random() * 15) + 3;
+      const rows = Math.floor(Math.random() * 8) + 2;
       setLayout({ type: "matrix", columns, rows });
     } else {
       const rings = Math.floor(Math.random() * 3) + 3;
@@ -96,7 +96,7 @@ function App() {
         </div>
         <div className="flex gap-2">
           <div className="text-white">{`repeater: `}</div>
-          {[1, 2, 3].map((repeat) => (
+          {[0.25, 0.5, 1, 2, 3].map((repeat) => (
             <button
               key={repeat}
               disabled={repeat === settings.repeater.data}
