@@ -1,9 +1,8 @@
 import { useState } from "react";
 
-import { useController, useControllerStore } from "./core/controller";
+import { useGlobalController, useControllerStore } from "./core/controller";
 import { CircleLayout, MatrixLayout } from "./layout";
 import { sequencePresets, colorPresets } from "./presets";
-import { stepperPresets } from "./presets/stepper";
 
 type Layout =
   | { type: "matrix"; columns: number; rows: number }
@@ -16,7 +15,7 @@ const layoutPresets: Record<Layout[keyof Layout], Layout> = {
 
 function App() {
   // Top level controller
-  useController();
+  useGlobalController();
 
   const playing = useControllerStore((state) => state.playing);
   const sequence = useControllerStore((state) => state.sequence);
@@ -26,9 +25,10 @@ function App() {
   const stop = useControllerStore((state) => state.stop);
   const updateTempo = useControllerStore((state) => state.updateTempo);
   const updateSequence = useControllerStore((state) => state.updateSequence);
+  const updateRepeat = useControllerStore((state) => state.updateRepeat);
+
   const updateColor = useControllerStore((state) => state.updateColor);
-  const updateRepeater = useControllerStore((state) => state.updateRepeater);
-  const updateStepper = useControllerStore((state) => state.updateStepper);
+  const updateStep = useControllerStore((state) => state.updateStep);
 
   const [layout, setLayout] = useState<Layout>(layoutPresets.matrix);
 
@@ -101,9 +101,9 @@ function App() {
           {[0.25, 0.5, 1, 2, 3].map((repeat) => (
             <button
               key={repeat}
-              disabled={repeat === settings.repeater.data}
-              className={`text-blue-500 ${repeat === settings.repeater.data ? "underline" : ""}`}
-              onClick={() => updateRepeater({ data: repeat })}
+              disabled={repeat === settings.repeat}
+              className={`text-blue-500 ${repeat === settings.repeat ? "underline" : ""}`}
+              onClick={() => updateRepeat(repeat)}
             >
               {repeat}
             </button>
@@ -127,15 +127,15 @@ function App() {
         </div>
 
         <div className="flex gap-2">
-          <div className="text-white">{`stepper: `}</div>
-          {Object.keys(stepperPresets).map((mode) => (
+          <div className="text-white">{`step: `}</div>
+          {[-1, 0, 1, 2, 3].map((step) => (
             <button
-              key={mode}
-              disabled={mode === settings.stepper.mode}
-              className={`text-blue-500 ${mode === settings.stepper.mode ? "underline" : ""}`}
-              onClick={() => updateStepper({ mode })}
+              key={step}
+              disabled={step === settings.step}
+              className={`text-blue-500 ${step === settings.step ? "underline" : ""}`}
+              onClick={() => updateStep(step)}
             >
-              {mode}
+              {step}
             </button>
           ))}
         </div>

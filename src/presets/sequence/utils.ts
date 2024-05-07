@@ -13,6 +13,14 @@ export const getReversedElementGroup = (groups: ElementInfo[][]) =>
 export const getActionGroups = (groups: ElementInfo[][]): ElementActionGroups =>
   groups.map((v) => ({ groups: v }));
 
+export const repeatArray = <T>(arr: T[], n: number) => {
+  const result: T[] = [];
+  for (let i = 0; i < n; i++) {
+    arr.forEach((item) => result.push({ ...item }));
+  }
+  return result;
+};
+
 const calculateCentroid = (elements: ElementInfo[]) => {
   const sum = elements.reduce(
     (acc, coord) => {

@@ -50,8 +50,6 @@ export type ControllerPluginSetting<T> = { mode: string; data: T };
 
 export type ControllerPluginSettings = {
   color: ControllerPluginSetting<string[]>;
-  repeater: ControllerPluginSetting<number>;
-  stepper: ControllerPluginSetting<number[]>;
 };
 
 export type ControllerPlugins = (keyof ControllerPluginSettings)[];
@@ -59,47 +57,46 @@ export type ControllerPlugins = (keyof ControllerPluginSettings)[];
 export type ControllerSettings = {
   tempo: number;
   interval: number;
+  repeat: number;
+  step: number;
 } & ControllerPluginSettings;
 
 export type ControllerUpdateSequenceFn = (sequence: string) => void;
-
-export type ControllerUpdatePluginsFn = (plugins: ControllerPlugins) => void;
 
 export type ControllerUpdateSettingsFn = (
   settings: Partial<ControllerSettings>,
 ) => void;
 
+export type ControllerUpdateRepeatFn = (repeat: number) => void;
+export type ControllerUpdateStepFn = (step: number) => void;
 export type ControllerUpdateTempoFn = (tempo: number) => void;
+
 export type ControllerUpdateColorFn = (
   data: Partial<ControllerPluginSetting<string[]>>,
 ) => void;
-export type ControllerUpdateRepeaterFn = (
-  data: Partial<ControllerPluginSetting<number>>,
-) => void;
 export type ControllerUpdateStepperFn = (
-  data: Partial<ControllerPluginSetting<number[]>>,
+  data: Partial<ControllerPluginSetting<number>>,
 ) => void;
 
 export type ControllerStore = {
   playing: boolean;
   sequence: string;
   settings: ControllerSettings;
-  plugins: ControllerPlugins;
   updateSequence: ControllerUpdateSequenceFn;
   updateTempo: ControllerUpdateTempoFn;
+  updateRepeat: ControllerUpdateRepeatFn;
+  updateStep: ControllerUpdateStepFn;
   updateColor: ControllerUpdateColorFn;
-  updateRepeater: ControllerUpdateRepeaterFn;
-  updateStepper: ControllerUpdateStepperFn;
   updateSettings: ControllerUpdateSettingsFn;
-  updatePlugins: ControllerUpdatePluginsFn;
 } & SchedulerHookReturn;
 
-export type PluginStore = {
+export type RuntimeStore = {
   position: number;
   skipCount: number;
+  timeouts: NodeJS.Timeout[];
   setSkipCount: (count: number) => void;
-  skip: () => void;
-  tick: () => void;
+  addTimeout: (timeout: NodeJS.Timeout) => void;
+  tick: (repeat?: number) => void;
   reset: () => void;
 };
 

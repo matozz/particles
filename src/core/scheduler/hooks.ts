@@ -2,9 +2,7 @@ import { useCallback, useEffect, useRef } from "react";
 
 import { SchedulerHook } from "./types";
 
-export const useScheduler: SchedulerHook = (interval, options) => {
-  const { onTick } = options || {};
-
+export const useScheduler: SchedulerHook = (interval, onTick) => {
   const worker = useRef<Worker>();
 
   useEffect(() => {

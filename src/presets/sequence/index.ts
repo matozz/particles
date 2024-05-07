@@ -25,8 +25,8 @@ export const sequencePresets: Record<string, SequencePreset> = {
       const groups = groupElementsByAxis(elements, reverse ? "y" : "x");
       const revGroups = getReversedElementGroup(groups);
 
-      groups.pop();
-      revGroups.pop();
+      // groups.pop();
+      // revGroups.pop();
 
       return {
         type: "static",
