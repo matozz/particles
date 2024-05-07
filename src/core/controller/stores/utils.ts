@@ -1,7 +1,6 @@
-import { sequencePresets } from "@/presets";
-
+import { sequencePresets } from "../sequence";
 import {
-  ControllerPluginSettings,
+  ControllerExtraSettings,
   ControllerSettings,
   ControllerStore,
   ElementInfo,
@@ -42,19 +41,19 @@ export const mergeSettings = (
   settings: Partial<ControllerSettings>,
 ) => mergeState(state, { settings: { ...state.settings, ...settings } });
 
-export function getPluginSetting<K extends keyof ControllerPluginSettings>(
+export function getExtraSetting<K extends keyof ControllerExtraSettings>(
   field: K,
   options: {
     mode?: string;
-    data?: ControllerPluginSettings[K]["data"];
-    fallback?: ControllerPluginSettings[K];
+    data?: ControllerExtraSettings[K]["data"];
+    fallback?: ControllerExtraSettings[K];
   },
-): { [P in K]: ControllerPluginSettings[K] } {
+): { [P in K]: ControllerExtraSettings[K] } {
   const { mode, data, fallback } = options;
   return {
     [field]: {
       mode: mode || fallback?.mode,
       data: data || fallback?.data,
     },
-  } as { [P in K]: ControllerPluginSettings[K] };
+  } as { [P in K]: ControllerExtraSettings[K] };
 }

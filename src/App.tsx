@@ -1,8 +1,11 @@
 import { useState } from "react";
 
-import { useGlobalController, useControllerStore } from "./core/controller";
+import {
+  useGlobalController,
+  useControllerStore,
+  sequencePresets,
+} from "./core/controller";
 import { CircleLayout, MatrixLayout } from "./layout";
-import { sequencePresets, colorPresets } from "./presets";
 
 type Layout =
   | { type: "matrix"; columns: number; rows: number }
@@ -85,7 +88,7 @@ function App() {
       <div className="flex gap-8">
         <div className="flex gap-2">
           <div className="text-white">{`color mode: `}</div>
-          {Object.keys(colorPresets).map((mode) => (
+          {["static", "gradient"].map((mode) => (
             <button
               key={mode}
               disabled={mode === settings.color.mode}

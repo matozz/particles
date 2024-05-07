@@ -1,10 +1,10 @@
 import { useControllerStore, useRuntimeStore } from "../stores";
-import { ElementActionGroups, ElementSequence } from "../types";
+import { ElementActionGroup, ElementSequence } from "../types";
 import { expandGroups } from "./utils";
 
 export const handleRepeat = (
   sequence: ElementSequence,
-): ElementActionGroups => {
+): ElementActionGroup[] => {
   const settings = useControllerStore.getState().settings;
   const { repeat } = settings;
 

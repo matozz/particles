@@ -17,10 +17,8 @@ export type ElementActionGroup = {
   transition?: number;
 };
 
-export type ElementActionGroups = ElementActionGroup[];
-
 export type ElementActionSetting = {
-  actionGroups: ElementActionGroups;
+  actionGroups: ElementActionGroup[];
   skip: boolean;
 };
 
@@ -32,8 +30,8 @@ export type BasePresetSetting = {
 };
 
 export type ElementSequence =
-  | { type: "static"; groups: ElementActionGroups }
-  | { type: "dynamic"; groups: () => ElementActionGroups };
+  | { type: "static"; groups: ElementActionGroup[] }
+  | { type: "dynamic"; groups: () => ElementActionGroup[] };
 
 export type ElementSequenceMap = Record<string, ElementSequence>;
 
@@ -46,20 +44,18 @@ export type ElementStore = {
   generate: () => void;
 };
 
-export type ControllerPluginSetting<T> = { mode: string; data: T };
+export type ControllerExtraSetting<T> = { mode: string; data: T };
 
-export type ControllerPluginSettings = {
-  color: ControllerPluginSetting<string[]>;
+export type ControllerExtraSettings = {
+  color: ControllerExtraSetting<string[]>;
 };
-
-export type ControllerPlugins = (keyof ControllerPluginSettings)[];
 
 export type ControllerSettings = {
   tempo: number;
   interval: number;
   repeat: number;
   step: number;
-} & ControllerPluginSettings;
+} & ControllerExtraSettings;
 
 export type ControllerUpdateSequenceFn = (sequence: string) => void;
 
@@ -72,10 +68,10 @@ export type ControllerUpdateStepFn = (step: number) => void;
 export type ControllerUpdateTempoFn = (tempo: number) => void;
 
 export type ControllerUpdateColorFn = (
-  data: Partial<ControllerPluginSetting<string[]>>,
+  data: Partial<ControllerExtraSetting<string[]>>,
 ) => void;
 export type ControllerUpdateStepperFn = (
-  data: Partial<ControllerPluginSetting<number>>,
+  data: Partial<ControllerExtraSetting<number>>,
 ) => void;
 
 export type ControllerStore = {

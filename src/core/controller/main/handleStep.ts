@@ -1,9 +1,9 @@
 import { useControllerStore, useRuntimeStore } from "../stores";
-import { ElementActionGroups } from "../types";
+import { ElementActionGroup } from "../types";
 import { getActiveIndex, getActiveIndexList } from "./utils";
 
 const getGroups = (
-  actionGroups: ElementActionGroups,
+  actionGroups: ElementActionGroup[],
   step: number,
   position: number,
 ) => {
@@ -12,7 +12,7 @@ const getGroups = (
     return [actionGroups[idx]];
   } else {
     const idxes = getActiveIndexList(position, actionGroups.length, step);
-    return actionGroups.reduce<ElementActionGroups>((acc, cur, i) => {
+    return actionGroups.reduce<ElementActionGroup[]>((acc, cur, i) => {
       if (idxes.includes(i)) {
         acc.push(cur);
       }
@@ -22,8 +22,8 @@ const getGroups = (
 };
 
 export const handleStep = (
-  actionGroups: ElementActionGroups,
-): ElementActionGroups => {
+  actionGroups: ElementActionGroup[],
+): ElementActionGroup[] => {
   const settings = useControllerStore.getState().settings;
   const { repeat, step } = settings;
 
@@ -36,7 +36,7 @@ export const handleStep = (
   if (repeat >= 2) {
     const orgActionGroups = actionGroups.slice(0, actionGroups.length / repeat);
 
-    let groups: ElementActionGroups = [];
+    let groups: ElementActionGroup[] = [];
     for (let i = 0; i < repeat; i++) {
       groups = groups.concat(getGroups(orgActionGroups, step, position + i));
     }

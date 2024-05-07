@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 import { ControllerStore } from "../types";
 import {
-  getPluginSetting,
+  getExtraSetting,
   getTempoSetting,
   mergeSettings,
   mergeState,
@@ -15,7 +15,7 @@ export const useControllerStore = create<ControllerStore>((set) => ({
     repeat: 1,
     step: -1,
     ...getTempoSetting(170),
-    ...getPluginSetting("color", {
+    ...getExtraSetting("color", {
       mode: "gradient",
       data: ["#0000ff", "#800080", "#0000ff"],
     }),
@@ -33,7 +33,7 @@ export const useControllerStore = create<ControllerStore>((set) => ({
       const { color: fallback } = state.settings;
       return mergeSettings(
         state,
-        getPluginSetting("color", { mode, data, fallback }),
+        getExtraSetting("color", { mode, data, fallback }),
       );
     }),
 }));

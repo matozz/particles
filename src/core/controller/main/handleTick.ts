@@ -4,6 +4,7 @@ import {
   useRuntimeStore,
 } from "../stores";
 import { ElementBaseState } from "../types";
+import { handleColor } from "./handleColor";
 import { handleRepeat } from "./handleRepeat";
 import { handleStep } from "./handleStep";
 import { getAutoTransition, getBatchDuration } from "./utils";
@@ -26,6 +27,7 @@ export const handleTick = () => {
   // labels: optimization
   let actionGroups = handleRepeat(sequenceMap[sequence]);
   actionGroups = handleStep(actionGroups);
+  actionGroups = handleColor(actionGroups);
 
   // skip tick if `actionGroups` is empty
   if (actionGroups.length === 0) {

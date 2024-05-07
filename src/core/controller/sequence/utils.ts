@@ -1,4 +1,4 @@
-import { ElementActionGroups, ElementInfo } from "@/core/controller";
+import { ElementInfo, ElementActionGroup } from "../types";
 
 const precision = 4;
 
@@ -10,8 +10,9 @@ export const getRandomElements = (
 export const getReversedElementGroup = (groups: ElementInfo[][]) =>
   [...groups].reverse();
 
-export const getActionGroups = (groups: ElementInfo[][]): ElementActionGroups =>
-  groups.map((v) => ({ groups: v }));
+export const getActionGroups = (
+  groups: ElementInfo[][],
+): ElementActionGroup[] => groups.map((v) => ({ groups: v }));
 
 export const repeatArray = <T>(arr: T[], n: number) => {
   const result: T[] = [];

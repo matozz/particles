@@ -1,5 +1,4 @@
-import { ElementSequence, ElementInfo } from "@/core/controller";
-
+import { ElementInfo, ElementSequence } from "../types";
 import {
   getActionGroups,
   getRandomElements,
