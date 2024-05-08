@@ -1,4 +1,4 @@
-import { ElementInfo, ElementSequence } from "../types";
+import { ElementSequencePreset } from "../types";
 import {
   getActionGroups,
   getRandomElements,
@@ -8,25 +8,19 @@ import {
   groupElementsByDistance,
 } from "./utils";
 
-export type SequencePreset = {
-  data: (elements: ElementInfo[], reverse?: boolean) => ElementSequence;
-};
-
-export const sequencePresets: Record<string, SequencePreset> = {
+export const sequencePresets: Record<string, ElementSequencePreset> = {
   flow: {
-    data: (elements, reverse) => {
-      const groups = groupElementsByAxis(elements, reverse ? "y" : "x");
+    data: (elements, options) => {
+      const { direction = "x" } = options || {};
+      const groups = groupElementsByAxis(elements, direction);
       return { type: "static", groups: getActionGroups(groups) };
     },
   },
   reverse_flow: {
-    data: (elements, reverse) => {
-      const groups = groupElementsByAxis(elements, reverse ? "y" : "x");
+    data: (elements, options) => {
+      const { direction = "x" } = options || {};
+      const groups = groupElementsByAxis(elements, direction);
       const revGroups = getReversedElementGroup(groups);
-
-      // groups.pop();
-      // revGroups.pop();
-
       return {
         type: "static",
         groups: getActionGroups([...groups, ...revGroups]),
@@ -46,11 +40,12 @@ export const sequencePresets: Record<string, SequencePreset> = {
     },
   },
   flash: {
-    data: (elements) => {
-      const getGroups = () =>
-        getActionGroups([
-          getRandomElements(elements, Math.round(elements.length / 4)),
-        ]);
+    data: (elements, options) => {
+      const { density = 0.25 } = options || {};
+      const getGroups = () => {
+        const num = Math.round(elements.length / (1 / density));
+        return getActionGroups([getRandomElements(elements, num)]);
+      };
       return { type: "dynamic", groups: getGroups };
     },
   },

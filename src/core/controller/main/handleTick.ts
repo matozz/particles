@@ -19,13 +19,13 @@ export const handleTick = () => {
   const tick = useRuntimeStore.getState().tick;
   const addTimeout = useRuntimeStore.getState().addTimeout;
 
-  if (!sequenceMap[sequence]) {
+  if (!sequenceMap[sequence.type]) {
     return;
   }
 
   // TODO: Sample element groups with excessively short trigger
   // labels: optimization
-  let actionGroups = handleRepeat(sequenceMap[sequence]);
+  let actionGroups = handleRepeat(sequenceMap[sequence.type]);
   actionGroups = handleStep(actionGroups);
   actionGroups = handleColor(actionGroups);
 

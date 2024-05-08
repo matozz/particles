@@ -3,6 +3,7 @@ import { SchedulerHookReturn } from "../scheduler/types";
 export type ElementBaseState = {
   transition?: number;
   color?: string;
+  ease?: [number, number, number, number];
 };
 export type ElementCallback = (state: ElementBaseState) => void;
 
@@ -17,23 +18,23 @@ export type ElementActionGroup = {
   transition?: number;
 };
 
-export type ElementActionSetting = {
-  actionGroups: ElementActionGroup[];
-  skip: boolean;
-};
-
-export type BasePresetSetting = {
-  data: (
-    config: ElementActionSetting,
-    settings: ControllerSettings,
-  ) => ElementActionSetting;
-};
-
 export type ElementSequence =
   | { type: "static"; groups: ElementActionGroup[] }
   | { type: "dynamic"; groups: () => ElementActionGroup[] };
 
 export type ElementSequenceMap = Record<string, ElementSequence>;
+
+export type ElementSequencePresetOptions = {
+  direction?: "x" | "y";
+  density?: number;
+};
+
+export type ElementSequencePreset = {
+  data: (
+    elements: ElementInfo[],
+    options?: ElementSequencePresetOptions,
+  ) => ElementSequence;
+};
 
 export type ElementStore = {
   elementMap: Map<string, ElementInfo> | undefined;
@@ -57,7 +58,14 @@ export type ControllerSettings = {
   step: number;
 } & ControllerExtraSettings;
 
-export type ControllerUpdateSequenceFn = (sequence: string) => void;
+export type ControllerSequenceSetting = {
+  type: string;
+  options?: ElementSequencePresetOptions;
+};
+
+export type ControllerUpdateSequenceFn = (
+  sequence: ControllerSequenceSetting,
+) => void;
 
 export type ControllerUpdateSettingsFn = (
   settings: Partial<ControllerSettings>,
@@ -76,7 +84,7 @@ export type ControllerUpdateStepperFn = (
 
 export type ControllerStore = {
   playing: boolean;
-  sequence: string;
+  sequence: ControllerSequenceSetting;
   settings: ControllerSettings;
   updateSequence: ControllerUpdateSequenceFn;
   updateTempo: ControllerUpdateTempoFn;

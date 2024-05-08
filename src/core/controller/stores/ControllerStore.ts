@@ -10,7 +10,7 @@ import {
 
 export const useControllerStore = create<ControllerStore>((set) => ({
   playing: false,
-  sequence: "flow",
+  sequence: { type: "flow", options: { density: 0.25 } },
   settings: {
     repeat: 1,
     step: -1,

@@ -7,6 +7,7 @@ import {
   ElementSequenceMap,
   ElementStore,
 } from "../types";
+import { useControllerStore } from "./ControllerStore";
 
 export const getElementExtraStates = (
   elementMap: Map<string, ElementInfo> | undefined,
@@ -14,12 +15,14 @@ export const getElementExtraStates = (
   if (!elementMap) {
     return { elementList: [], sequenceMap: {} };
   }
+  const { options } = useControllerStore.getState().sequence;
+
   const elementList = Array.from(elementMap.values());
   const sequenceMap = Object.entries(
     sequencePresets,
   ).reduce<ElementSequenceMap>((acc, cur) => {
     const [key, { data }] = cur;
-    acc[key] = data(elementList);
+    acc[key] = data(elementList, options);
     return acc;
   }, {});
 
@@ -33,7 +36,7 @@ export const mergeState = <T>(state: T, values: Partial<T>): T => ({
 
 export const getTempoSetting = (tempo: number) => ({
   tempo,
-  interval: (60 / tempo) * 1000,
+  interval: Math.round((60 / tempo) * 1000),
 });
 
 export const mergeSettings = (

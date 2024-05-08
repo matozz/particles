@@ -73,14 +73,14 @@ function App() {
 
       <div className="flex gap-2">
         <div className="text-white">{`sequence: `}</div>
-        {Object.keys(sequencePresets).map((item) => (
+        {Object.keys(sequencePresets).map((type) => (
           <button
-            key={item}
-            disabled={item === sequence}
-            className={`text-blue-500 ${item === sequence ? "underline" : ""}`}
-            onClick={() => updateSequence(item)}
+            key={type}
+            disabled={type === sequence.type}
+            className={`text-blue-500 ${type === sequence.type ? "underline" : ""}`}
+            onClick={() => updateSequence({ type })}
           >
-            {item}
+            {type}
           </button>
         ))}
       </div>
@@ -151,6 +151,7 @@ function App() {
       {layout.type === "matrix" && (
         <MatrixLayout columns={layout.columns} rows={layout.rows} />
       )}
+
       {layout.type === "circle" && (
         <CircleLayout rings={layout.rings} increment={layout.increment} />
       )}
