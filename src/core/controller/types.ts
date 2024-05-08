@@ -1,6 +1,10 @@
 import { SchedulerHookReturn } from "../scheduler/types";
 
-export type ElementBaseState = ControllerSettings;
+export type ElementBaseState = {
+  transition?: number;
+  color?: string;
+  ease?: [number, number, number, number];
+};
 export type ElementCallback = (state: ElementBaseState) => void;
 
 export type ElementInfo = { x: number; y: number; callback: ElementCallback };
@@ -8,40 +12,100 @@ export type ElementInfo = { x: number; y: number; callback: ElementCallback };
 export type ElementBindFn = (id: string, elementInfo: ElementInfo) => void;
 export type ElementUnBindFn = (id: string) => void;
 
-export type ElementGroupMeta =
-  | { type: "static"; groups: ElementInfo[][] }
-  | { type: "dynamic"; groups: () => ElementInfo[][] };
+export type ElementActionGroup = {
+  groups: ElementInfo[];
+  color?: string;
+  transition?: number;
+};
 
-export type ElementGroupMap = Record<string, ElementGroupMeta>;
+export type ElementSequence =
+  | { type: "static"; groups: ElementActionGroup[] }
+  | { type: "dynamic"; groups: () => ElementActionGroup[] };
+
+export type ElementSequenceMap = Record<string, ElementSequence>;
+
+export type ElementSequencePresetOptions = {
+  direction?: "x" | "y";
+  density?: number;
+};
+
+export type ElementSequencePreset = {
+  data: (
+    elements: ElementInfo[],
+    options?: ElementSequencePresetOptions,
+  ) => ElementSequence;
+};
 
 export type ElementStore = {
   elementMap: Map<string, ElementInfo> | undefined;
   elementList: ElementInfo[];
-  elementGroupMap: ElementGroupMap;
+  sequenceMap: ElementSequenceMap;
   bind: ElementBindFn;
   unbind: ElementUnBindFn;
+  generate: () => void;
+};
+
+export type ControllerExtraSetting<T> = { mode: string; data: T };
+
+export type ControllerExtraSettings = {
+  color: ControllerExtraSetting<string[]>;
 };
 
 export type ControllerSettings = {
   tempo: number;
   interval: number;
+  repeat: number;
+  step: number;
+} & ControllerExtraSettings;
+
+export type ControllerSequenceSetting = {
+  type: string;
+  options?: ElementSequencePresetOptions;
 };
 
-export type ControllerUpdateSequenceFn = (sequence: string) => void;
+export type ControllerUpdateSequenceFn = (
+  sequence: ControllerSequenceSetting,
+) => void;
 
 export type ControllerUpdateSettingsFn = (
   settings: Partial<ControllerSettings>,
 ) => void;
 
+export type ControllerUpdateRepeatFn = (repeat: number) => void;
+export type ControllerUpdateStepFn = (step: number) => void;
 export type ControllerUpdateTempoFn = (tempo: number) => void;
+
+export type ControllerUpdateColorFn = (
+  data: Partial<ControllerExtraSetting<string[]>>,
+) => void;
+export type ControllerUpdateStepperFn = (
+  data: Partial<ControllerExtraSetting<number>>,
+) => void;
 
 export type ControllerStore = {
   playing: boolean;
-  sequence: string;
+  sequence: ControllerSequenceSetting;
   settings: ControllerSettings;
   updateSequence: ControllerUpdateSequenceFn;
   updateTempo: ControllerUpdateTempoFn;
+  updateRepeat: ControllerUpdateRepeatFn;
+  updateStep: ControllerUpdateStepFn;
+  updateColor: ControllerUpdateColorFn;
   updateSettings: ControllerUpdateSettingsFn;
 } & SchedulerHookReturn;
 
-export type UseBindElementHook = (id: string, elementInfo: ElementInfo) => void;
+export type RuntimeStore = {
+  position: number;
+  skipCount: number;
+  timeouts: NodeJS.Timeout[];
+  setSkipCount: (count: number) => void;
+  addTimeout: (timeout: NodeJS.Timeout) => void;
+  tick: (repeat?: number) => void;
+  reset: () => void;
+};
+
+export type BindElementHook = (
+  elementId: string,
+  elementInfo: ElementInfo,
+) => void;
+export type BindLayoutHook = (layoutId: string, count: number) => void;

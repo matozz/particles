@@ -1,22 +1,27 @@
-import { memo, useCallback } from "react";
+import { memo, useCallback, useId } from "react";
 
-import SquareElement from "@/elements/square";
+import { useBindLayout } from "@/core/controller";
+import SpotlightElement from "@/elements/spotlight";
 
 import "./index.css";
 
-interface MatrixProps {
+interface MatrixLayoutProps {
   rows: number;
   columns: number;
 }
 
-const Matrix: React.FC<MatrixProps> = memo((props) => {
+const MatrixLayout: React.FC<MatrixLayoutProps> = memo((props) => {
   const { rows, columns } = props;
+
+  const id = useId();
+
+  useBindLayout(id, rows * columns);
 
   const generateMatrix = useCallback(() => {
     const elements: JSX.Element[] = [];
     for (let i = 0; i < rows; i++) {
       for (let j = 0; j < columns; j++) {
-        elements.push(<SquareElement key={`${i}-${j}`} x={j} y={i} />);
+        elements.push(<SpotlightElement key={`${i}-${j}`} x={j} y={i} />);
       }
     }
     return elements;
@@ -34,4 +39,4 @@ const Matrix: React.FC<MatrixProps> = memo((props) => {
   );
 });
 
-export default Matrix;
+export default MatrixLayout;

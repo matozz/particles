@@ -1,9 +1,26 @@
-import { ElementInfo } from "../controller";
+import { ElementInfo, ElementActionGroup } from "../types";
+
+const precision = 4;
 
 export const getRandomElements = (
   elements: ElementInfo[],
   num = Math.round(elements.length / 2),
 ) => [...elements].sort(() => 0.5 - Math.random()).slice(0, num);
+
+export const getReversedElementGroup = (groups: ElementInfo[][]) =>
+  [...groups].reverse();
+
+export const getActionGroups = (
+  groups: ElementInfo[][],
+): ElementActionGroup[] => groups.map((v) => ({ groups: v }));
+
+export const repeatArray = <T>(arr: T[], n: number) => {
+  const result: T[] = [];
+  for (let i = 0; i < n; i++) {
+    arr.forEach((item) => result.push({ ...item }));
+  }
+  return result;
+};
 
 const calculateCentroid = (elements: ElementInfo[]) => {
   const sum = elements.reduce(
@@ -59,8 +76,9 @@ export const groupElementsByDistance = (elements: ElementInfo[]) => {
   const distanceGroups = new Map<number, ElementInfo[]>();
 
   elements.forEach((element) => {
-    const distance = distanceFromCentroid(element, centroid);
-
+    const distance = Number(
+      distanceFromCentroid(element, centroid).toFixed(precision),
+    );
     if (!distanceGroups.has(distance)) {
       distanceGroups.set(distance, []);
     }
@@ -79,7 +97,7 @@ export const groupElementsByAngle = (elements: ElementInfo[]) => {
   const angleGroups = new Map<number, ElementInfo[]>();
 
   elements.forEach((element) => {
-    const angle = calculateAngle(element, centroid);
+    const angle = Number(calculateAngle(element, centroid).toFixed(precision));
     if (angleGroups.has(angle)) {
       angleGroups.get(angle)?.push(element);
     } else {

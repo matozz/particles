@@ -2,11 +2,8 @@ import { useCallback, useEffect, useRef } from "react";
 
 import { SchedulerHook } from "./types";
 
-export const useScheduler: SchedulerHook = (interval, options) => {
-  const { onTick } = options || {};
-
+export const useScheduler: SchedulerHook = (interval, onTick) => {
   const worker = useRef<Worker>();
-  const stopRef = useRef(false);
 
   useEffect(() => {
     const timeWorker = new Worker(new URL("./worker.ts", import.meta.url));
@@ -21,9 +18,7 @@ export const useScheduler: SchedulerHook = (interval, options) => {
   useEffect(() => {
     if (worker.current) {
       worker.current.onmessage = (e) => {
-        if (e.data === "tick") {
-          onTick?.({ stopRef });
-        }
+        e.data === "tick" && onTick?.();
       };
     }
   }, [onTick, worker.current]);
@@ -34,12 +29,10 @@ export const useScheduler: SchedulerHook = (interval, options) => {
 
   const start = useCallback(() => {
     worker.current?.postMessage({ action: "start", interval });
-    stopRef.current = false;
   }, [interval]);
 
   const stop = useCallback(() => {
     worker.current?.postMessage({ action: "stop" });
-    stopRef.current = true;
   }, []);
 
   return { start, stop };
