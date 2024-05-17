@@ -1,4 +1,5 @@
 import { SchedulerHookReturn } from "../scheduler/types";
+import { LayoutDirection } from "./constant";
 
 export type ElementBaseState = {
   transition?: number;
@@ -7,39 +8,70 @@ export type ElementBaseState = {
 };
 export type ElementCallback = (state: ElementBaseState) => void;
 
-export type ElementInfo = { x: number; y: number; callback: ElementCallback };
+export type ElementBindData = {
+  x: number;
+  y: number;
+  callback: ElementCallback;
+};
+
+export type ElementInfo = { id: string } & ElementBindData;
+
+export type ElementActionState = { color?: string; transition?: number };
+
+export type ElementActionGroup = {
+  groups: (ElementInfo & ElementActionState)[];
+} & ElementActionState;
+
+export type ElementSequence =
+  | { type: "static"; sequence: ElementActionGroup[][] }
+  | { type: "dynamic"; sequence: (() => ElementActionGroup[])[] };
+
+export type ElementPresetMap = Record<string, ElementSequence>;
+
+export type ElementLayoutMap = Record<
+  LayoutDirection,
+  {
+    totalLength: number;
+    elementArr: ElementInfo[][];
+    elementMap: Record<string, number>;
+  }
+>;
+
+export type ElementSequencePresetOptions = {
+  density?: number;
+};
+
+type SequenceProps = {
+  elements: ElementInfo[];
+  layoutMap: ElementLayoutMap;
+  options?: ElementSequencePresetOptions;
+};
+
+export type ElementSequencePreset =
+  | {
+      type: "static";
+      sequence: (props: SequenceProps) => ElementActionGroup[];
+    }
+  | {
+      type: "static";
+      step: (props: SequenceProps) => ElementActionGroup[][];
+    }
+  | {
+      type: "dynamic";
+      sequence: (props: SequenceProps) => () => ElementActionGroup[];
+    }
+  | {
+      type: "dynamic";
+      step: (props: SequenceProps) => (() => ElementActionGroup[])[];
+    };
 
 export type ElementBindFn = (id: string, elementInfo: ElementInfo) => void;
 export type ElementUnBindFn = (id: string) => void;
 
-export type ElementActionGroup = {
-  groups: ElementInfo[];
-  color?: string;
-  transition?: number;
-};
-
-export type ElementSequence =
-  | { type: "static"; groups: ElementActionGroup[] }
-  | { type: "dynamic"; groups: () => ElementActionGroup[] };
-
-export type ElementSequenceMap = Record<string, ElementSequence>;
-
-export type ElementSequencePresetOptions = {
-  direction?: "x" | "y";
-  density?: number;
-};
-
-export type ElementSequencePreset = {
-  data: (
-    elements: ElementInfo[],
-    options?: ElementSequencePresetOptions,
-  ) => ElementSequence;
-};
-
 export type ElementStore = {
-  elementMap: Map<string, ElementInfo> | undefined;
-  elementList: ElementInfo[];
-  sequenceMap: ElementSequenceMap;
+  elementMap: Map<string, ElementInfo>;
+  presetMap: ElementPresetMap | undefined;
+  layoutMap: ElementLayoutMap | undefined;
   bind: ElementBindFn;
   unbind: ElementUnBindFn;
   generate: () => void;
@@ -48,14 +80,16 @@ export type ElementStore = {
 export type ControllerExtraSetting<T> = { mode: string; data: T };
 
 export type ControllerExtraSettings = {
-  color: ControllerExtraSetting<string[]>;
+  color: ControllerExtraSetting<{
+    direction: LayoutDirection | undefined;
+    colors: string[];
+  }>;
 };
 
 export type ControllerSettings = {
   tempo: number;
   interval: number;
   repeat: number;
-  step: number;
 } & ControllerExtraSettings;
 
 export type ControllerSequenceSetting = {
@@ -72,14 +106,11 @@ export type ControllerUpdateSettingsFn = (
 ) => void;
 
 export type ControllerUpdateRepeatFn = (repeat: number) => void;
-export type ControllerUpdateStepFn = (step: number) => void;
+
 export type ControllerUpdateTempoFn = (tempo: number) => void;
 
 export type ControllerUpdateColorFn = (
-  data: Partial<ControllerExtraSetting<string[]>>,
-) => void;
-export type ControllerUpdateStepperFn = (
-  data: Partial<ControllerExtraSetting<number>>,
+  data: Partial<ControllerExtraSettings["color"]>,
 ) => void;
 
 export type ControllerStore = {
@@ -89,7 +120,6 @@ export type ControllerStore = {
   updateSequence: ControllerUpdateSequenceFn;
   updateTempo: ControllerUpdateTempoFn;
   updateRepeat: ControllerUpdateRepeatFn;
-  updateStep: ControllerUpdateStepFn;
   updateColor: ControllerUpdateColorFn;
   updateSettings: ControllerUpdateSettingsFn;
 } & SchedulerHookReturn;
@@ -106,6 +136,7 @@ export type RuntimeStore = {
 
 export type BindElementHook = (
   elementId: string,
-  elementInfo: ElementInfo,
+  elementInfo: ElementBindData,
 ) => void;
+
 export type BindLayoutHook = (layoutId: string, count: number) => void;

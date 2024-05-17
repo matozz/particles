@@ -8,7 +8,6 @@ export const useBindLayout: BindLayoutHook = (id, count) => {
 
   useEffect(() => {
     if (elementMap?.size === count) {
-      console.log("generating new elements...", elementMap);
       useElementStore.getState().generate();
     }
   }, [id, count, elementMap]);

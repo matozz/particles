@@ -13,6 +13,7 @@ export const useBindElement: BindElementHook = (id, elementInfo) => {
 
     useElementStore.getState().bind(id, {
       ...rest,
+      id,
       callback: (state) => {
         if (isMountedRef.current) {
           callback(state);

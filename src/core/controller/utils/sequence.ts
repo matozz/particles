@@ -2,25 +2,9 @@ import { ElementInfo, ElementActionGroup } from "../types";
 
 const precision = 4;
 
-export const getRandomElements = (
-  elements: ElementInfo[],
-  num = Math.round(elements.length / 2),
-) => [...elements].sort(() => 0.5 - Math.random()).slice(0, num);
-
-export const getReversedElementGroup = (groups: ElementInfo[][]) =>
-  [...groups].reverse();
-
 export const getActionGroups = (
   groups: ElementInfo[][],
 ): ElementActionGroup[] => groups.map((v) => ({ groups: v }));
-
-export const repeatArray = <T>(arr: T[], n: number) => {
-  const result: T[] = [];
-  for (let i = 0; i < n; i++) {
-    arr.forEach((item) => result.push({ ...item }));
-  }
-  return result;
-};
 
 const calculateCentroid = (elements: ElementInfo[]) => {
   const sum = elements.reduce(
@@ -48,27 +32,6 @@ const calculateAngle = (
 };
 
 // Elements group utilities
-
-export const groupElementsByAxis = (
-  elements: ElementInfo[],
-  axis: "x" | "y",
-) => {
-  const groups = new Map<number, ElementInfo[]>();
-
-  elements.forEach((element) => {
-    const key = element[axis];
-    if (groups.has(key)) {
-      groups.get(key)?.push(element);
-    } else {
-      groups.set(key, [element]);
-    }
-  });
-
-  const groupedElements = Array.from(groups.values());
-  groupedElements.sort((a, b) => a[0][axis] - b[0][axis]);
-
-  return groupedElements;
-};
 
 export const groupElementsByDistance = (elements: ElementInfo[]) => {
   const centroid = calculateCentroid(elements);
