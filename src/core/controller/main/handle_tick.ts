@@ -3,30 +3,32 @@ import {
   useElementStore,
   useRuntimeStore,
 } from "../stores";
-import { ElementBaseState } from "../types";
-import { handleColor } from "./handleColor";
-import { handleRepeat } from "./handleRepeat";
-import { handleStep } from "./handleStep";
-import { getAutoTransition, getBatchDuration } from "./utils";
+import {
+  getAutoTransition,
+  getBatchDuration,
+  triggerAction,
+} from "../utils/tick_helper";
+import { handleColor } from "./handle_color";
+import { handleRepeat } from "./handle_repeat";
 
 export const handleTick = () => {
   const settings = useControllerStore.getState().settings;
   const sequence = useControllerStore.getState().sequence;
-  const sequenceMap = useElementStore.getState().sequenceMap;
+  const presetMap = useElementStore.getState().presetMap;
 
   const { repeat } = settings;
 
   const tick = useRuntimeStore.getState().tick;
   const addTimeout = useRuntimeStore.getState().addTimeout;
 
-  if (!sequenceMap[sequence.type]) {
+  if (!presetMap?.[sequence.type]) {
     return;
   }
 
   // TODO: Sample element groups with excessively short trigger
   // labels: optimization
-  let actionGroups = handleRepeat(sequenceMap[sequence.type]);
-  actionGroups = handleStep(actionGroups);
+
+  let actionGroups = handleRepeat(presetMap[sequence.type]);
   actionGroups = handleColor(actionGroups);
 
   // skip tick if `actionGroups` is empty
@@ -42,20 +44,11 @@ export const handleTick = () => {
   // TODO: Reschedule the unexecuted actions when tempo changed during excuting a actions group
   // labels: optimization
   for (const [i, action] of actionGroups.entries()) {
-    const state: ElementBaseState = {
-      transition: action.transition || autoTransition,
-      color: action.color,
-    };
-
     if (i === 0) {
-      for (const element of action.groups) {
-        element.callback(state);
-      }
+      triggerAction(action, { transition: autoTransition });
     } else {
       const timeout = setTimeout(() => {
-        for (const element of action.groups) {
-          element.callback(state);
-        }
+        triggerAction(action, { transition: autoTransition });
       }, batchDuration * i);
 
       addTimeout(timeout);

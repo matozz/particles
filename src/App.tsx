@@ -17,7 +17,6 @@ const layoutPresets: Record<Layout[keyof Layout], Layout> = {
 };
 
 function App() {
-  // Top level controller
   useGlobalController();
 
   const playing = useControllerStore((state) => state.playing);
@@ -29,9 +28,7 @@ function App() {
   const updateTempo = useControllerStore((state) => state.updateTempo);
   const updateSequence = useControllerStore((state) => state.updateSequence);
   const updateRepeat = useControllerStore((state) => state.updateRepeat);
-
   const updateColor = useControllerStore((state) => state.updateColor);
-  const updateStep = useControllerStore((state) => state.updateStep);
 
   const [layout, setLayout] = useState<Layout>(layoutPresets.matrix);
 
@@ -71,7 +68,7 @@ function App() {
         </button>
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex flex-wrap justify-center gap-2">
         <div className="text-white">{`sequence: `}</div>
         {Object.keys(sequencePresets).map((type) => (
           <button
@@ -85,10 +82,10 @@ function App() {
         ))}
       </div>
 
-      <div className="flex gap-8">
-        <div className="flex gap-2">
+      <div className="flex flex-wrap justify-center gap-8">
+        <div className="flex flex-wrap gap-2">
           <div className="text-white">{`color mode: `}</div>
-          {["static", "gradient"].map((mode) => (
+          {["static", "gradient-auto", "gradient-layout"].map((mode) => (
             <button
               key={mode}
               disabled={mode === settings.color.mode}
@@ -99,7 +96,7 @@ function App() {
             </button>
           ))}
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <div className="text-white">{`repeater: `}</div>
           {[0.25, 0.5, 1, 2, 3].map((repeat) => (
             <button
@@ -125,20 +122,6 @@ function App() {
               onClick={() => setLayout(item)}
             >
               {item.type}
-            </button>
-          ))}
-        </div>
-
-        <div className="flex gap-2">
-          <div className="text-white">{`step: `}</div>
-          {[-1, 0, 1, 2, 3].map((step) => (
-            <button
-              key={step}
-              disabled={step === settings.step}
-              className={`text-blue-500 ${step === settings.step ? "underline" : ""}`}
-              onClick={() => updateStep(step)}
-            >
-              {step}
             </button>
           ))}
         </div>

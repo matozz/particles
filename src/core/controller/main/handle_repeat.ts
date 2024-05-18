@@ -1,17 +1,17 @@
 import { useControllerStore, useRuntimeStore } from "../stores";
 import { ElementActionGroup, ElementSequence } from "../types";
-import { expandGroups } from "./utils";
+import { getRepeatGroups, getStaticGroups } from "../utils/repeat_helper";
 
 export const handleRepeat = (
   sequence: ElementSequence,
 ): ElementActionGroup[] => {
   const settings = useControllerStore.getState().settings;
+  const position = useRuntimeStore.getState().position;
+
   const { repeat } = settings;
 
-  const { type, groups } = sequence;
-
   if (repeat >= 2) {
-    return expandGroups(groups, repeat);
+    return getRepeatGroups(sequence, position, repeat);
   }
 
   if (repeat > 0 && repeat < 1) {
@@ -26,5 +26,5 @@ export const handleRepeat = (
     }
   }
 
-  return type === "static" ? groups : groups();
+  return getStaticGroups(sequence, position);
 };

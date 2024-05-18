@@ -1,12 +1,13 @@
 import { create } from "zustand";
 
 import { RuntimeStore } from "../types";
-import { mergeState } from "./utils";
+import { mergeState } from "../utils/store_common";
+
+const defaultState: Pick<RuntimeStore, "position" | "skipCount" | "timeouts"> =
+  { position: 1, skipCount: 0, timeouts: [] };
 
 export const useRuntimeStore = create<RuntimeStore>((set) => ({
-  position: 1,
-  skipCount: 0,
-  timeouts: [],
+  ...defaultState,
   setSkipCount: (skipCount) => set((state) => mergeState(state, { skipCount })),
   addTimeout: (timeout) =>
     set((state) =>
@@ -19,6 +20,6 @@ export const useRuntimeStore = create<RuntimeStore>((set) => ({
       for (const id of state.timeouts) {
         clearTimeout(id);
       }
-      return mergeState(state, { position: 1, skipCount: 0, timeouts: [] });
+      return mergeState(state, defaultState);
     }),
 }));

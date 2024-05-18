@@ -1,12 +1,14 @@
 import { create } from "zustand";
 
 import { ElementStore } from "../types";
-import { mergeState, getElementExtraStates } from "./utils";
+import { mergeState } from "../utils/store_common";
+import { getGenerateStates } from "../utils/store_element";
+import { useControllerStore } from "./ControllerStore";
 
 export const useElementStore = create<ElementStore>((set) => ({
   elementMap: new Map(),
-  elementList: [],
-  sequenceMap: {},
+  presetMap: undefined,
+  layoutMap: undefined,
   bind: (id, elementInfo) =>
     set((state) => {
       const elementMap = new Map(state.elementMap).set(id, elementInfo);
@@ -20,6 +22,7 @@ export const useElementStore = create<ElementStore>((set) => ({
     }),
   generate: () =>
     set((state) => {
-      return mergeState(state, getElementExtraStates(state.elementMap));
+      const { options } = useControllerStore.getState().sequence;
+      return mergeState(state, getGenerateStates(state.elementMap, options));
     }),
 }));
