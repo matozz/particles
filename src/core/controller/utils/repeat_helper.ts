@@ -2,9 +2,9 @@ import { ElementActionGroup, ElementSequence } from "../types";
 
 const getStepRepeatIndex = (
   position: number,
-  repeatNum: number,
+  repeat: number,
   groupLength: number,
-) => (((position - 1) % groupLength) + repeatNum) % groupLength;
+) => (((position - 1) % groupLength) + repeat) % groupLength;
 
 export const getRepeatGroups = (
   sequence: ElementSequence,

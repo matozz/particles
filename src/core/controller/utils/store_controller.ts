@@ -5,10 +5,10 @@ import {
 } from "../types";
 import { mergeState } from "./store_common";
 
-export const getTempoSetting = (tempo: number) => ({
-  tempo,
-  interval: Math.round((60 / tempo) * 1000),
-});
+export const getTempoSetting = (tempo: number) => {
+  const interval = Math.round((60 / tempo) * 1000);
+  return { tempo, interval };
+};
 
 export const mergeSettings = (
   state: ControllerStore,
@@ -22,7 +22,7 @@ export function getExtraSetting<K extends keyof ControllerExtraSettings>(
     data?: ControllerExtraSettings[K]["data"];
     fallback?: ControllerExtraSettings[K];
   },
-): { [P in K]: ControllerExtraSettings[K] } {
+) {
   const { mode, data, fallback } = options;
   return {
     [field]: {

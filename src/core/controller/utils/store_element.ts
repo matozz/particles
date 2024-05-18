@@ -1,7 +1,7 @@
 import { sequencePresets } from "../sequence";
 import {
   ElementInfo,
-  ElementSequencePresetOptions,
+  ElementSequenceOptions,
   ElementStore,
   ElementPresetMap,
 } from "../types";
@@ -9,7 +9,7 @@ import { getLayoutMap } from "./layout_generator";
 
 export const getGenerateStates = (
   elementMap: Map<string, ElementInfo>,
-  options: ElementSequencePresetOptions | undefined,
+  options: ElementSequenceOptions | undefined,
 ): Pick<ElementStore, "presetMap" | "layoutMap"> => {
   const elements = Array.from(elementMap.values());
 

@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 
 import { useElementStore } from "../stores";
-import { BindLayoutHook } from "../types";
+
+type BindLayoutHook = (layoutId: string, count: number) => void;
 
 export const useBindLayout: BindLayoutHook = (id, count) => {
   const elementMap = useElementStore((state) => state.elementMap);

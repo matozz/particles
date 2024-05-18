@@ -4,11 +4,7 @@ import { RuntimeStore } from "../types";
 import { mergeState } from "../utils/store_common";
 
 const defaultState: Pick<RuntimeStore, "position" | "skipCount" | "timeouts"> =
-  {
-    position: 1,
-    skipCount: 0,
-    timeouts: [],
-  };
+  { position: 1, skipCount: 0, timeouts: [] };
 
 export const useRuntimeStore = create<RuntimeStore>((set) => ({
   ...defaultState,

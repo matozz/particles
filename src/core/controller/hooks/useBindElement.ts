@@ -1,7 +1,12 @@
 import { useRef, useEffect } from "react";
 
 import { useElementStore } from "../stores";
-import { BindElementHook } from "../types";
+import { ElementBindData } from "../types";
+
+type BindElementHook = (
+  elementId: string,
+  elementInfo: ElementBindData,
+) => void;
 
 export const useBindElement: BindElementHook = (id, elementInfo) => {
   const isMountedRef = useRef(false);
