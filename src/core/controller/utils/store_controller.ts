@@ -17,17 +17,10 @@ export const mergeSettings = (
 
 export function getExtraSetting<K extends keyof ControllerExtraSettings>(
   field: K,
-  options: {
-    mode?: string;
-    data?: ControllerExtraSettings[K]["data"];
-    fallback?: ControllerExtraSettings[K];
-  },
+  options: { mode?: string; data?: ControllerExtraSettings[K]["data"] },
 ) {
-  const { mode, data, fallback } = options;
+  const { mode, data } = options;
   return {
-    [field]: {
-      mode: mode || fallback?.mode,
-      data: data || fallback?.data,
-    },
+    [field]: { mode, data },
   } as { [P in K]: ControllerExtraSettings[K] };
 }

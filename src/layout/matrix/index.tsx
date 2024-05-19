@@ -13,15 +13,22 @@ interface MatrixLayoutProps {
 const MatrixLayout: React.FC<MatrixLayoutProps> = memo((props) => {
   const { rows, columns } = props;
 
-  const id = useId();
+  const layoutId = useId();
 
-  useBindLayout(id, rows * columns);
+  useBindLayout(layoutId, rows * columns);
 
   const generateMatrix = useCallback(() => {
     const elements: JSX.Element[] = [];
     for (let i = 0; i < rows; i++) {
       for (let j = 0; j < columns; j++) {
-        elements.push(<SpotlightElement key={`${i}-${j}`} x={j} y={i} />);
+        elements.push(
+          <SpotlightElement
+            x={j}
+            y={i}
+            key={`${i}-${j}`}
+            layoutId={layoutId}
+          />,
+        );
       }
     }
     return elements;

@@ -4,11 +4,16 @@ import { useElementStore } from "../stores";
 import { ElementBindData } from "../types";
 
 type BindElementHook = (
+  layoutId: string,
   elementId: string,
   elementInfo: ElementBindData,
 ) => void;
 
-export const useBindElement: BindElementHook = (id, elementInfo) => {
+export const useBindElement: BindElementHook = (
+  layoutId,
+  elementId,
+  elementInfo,
+) => {
   const isMountedRef = useRef(false);
 
   useEffect(() => {
@@ -16,9 +21,9 @@ export const useBindElement: BindElementHook = (id, elementInfo) => {
 
     const { callback, ...rest } = elementInfo;
 
-    useElementStore.getState().bind(id, {
+    useElementStore.getState().bind(layoutId, elementId, {
       ...rest,
-      id,
+      id: elementId,
       callback: (state) => {
         if (isMountedRef.current) {
           callback(state);
@@ -28,7 +33,7 @@ export const useBindElement: BindElementHook = (id, elementInfo) => {
 
     return () => {
       isMountedRef.current = false;
-      useElementStore.getState().unbind(id);
+      useElementStore.getState().unbind(layoutId, elementId);
     };
-  }, [id, elementInfo]);
+  }, [layoutId, elementId, elementInfo]);
 };

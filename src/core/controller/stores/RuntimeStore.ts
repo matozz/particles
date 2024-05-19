@@ -3,23 +3,35 @@ import { create } from "zustand";
 import { RuntimeStore } from "../types";
 import { mergeState } from "../utils/store_common";
 
-const defaultState: Pick<RuntimeStore, "position" | "skipCount" | "timeouts"> =
-  { position: 1, skipCount: 0, timeouts: [] };
+const initRuntimeState: Pick<
+  RuntimeStore,
+  "position" | "skipCount" | "activeFrames"
+> = {
+  position: 1,
+  skipCount: 0,
+  activeFrames: [],
+};
 
 export const useRuntimeStore = create<RuntimeStore>((set) => ({
-  ...defaultState,
+  ...initRuntimeState,
   setSkipCount: (skipCount) => set((state) => mergeState(state, { skipCount })),
-  addTimeout: (timeout) =>
+  createActiveFrame: (frame) =>
     set((state) =>
-      mergeState(state, { timeouts: [...state.timeouts, timeout] }),
+      mergeState(state, {
+        activeFrames: [...state.activeFrames, frame],
+      }),
     ),
   tick: (repeat = 1) =>
     set((state) => mergeState(state, { position: state.position + repeat })),
   reset: () =>
     set((state) => {
-      for (const id of state.timeouts) {
-        clearTimeout(id);
+      for (const frame of state.activeFrames) {
+        if (frame.type === "raf") {
+          cancelAnimationFrame(frame.rafId);
+        } else {
+          clearTimeout(frame.timerId);
+        }
       }
-      return mergeState(state, defaultState);
+      return mergeState(state, initRuntimeState);
     }),
 }));

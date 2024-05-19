@@ -22,6 +22,7 @@ function App() {
   const playing = useControllerStore((state) => state.playing);
   const sequence = useControllerStore((state) => state.sequence);
   const settings = useControllerStore((state) => state.settings);
+  const triggerMode = useControllerStore((state) => state.triggerMode);
 
   const start = useControllerStore((state) => state.start);
   const stop = useControllerStore((state) => state.stop);
@@ -46,6 +47,7 @@ function App() {
 
   return (
     <div className="flex h-screen flex-col items-center justify-center gap-5 bg-[#111] p-10">
+      <div className="text-white">{`[mode]: ${triggerMode}`}</div>
       <div className="flex gap-5">
         <button
           className="text-blue-500 underline"
