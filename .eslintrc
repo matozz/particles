@@ -8,10 +8,11 @@
   ],
   "ignorePatterns": ["dist", ".eslintrc.cjs"],
   "parser": "@typescript-eslint/parser",
-  "plugins": ["react-refresh", "prettier"],
+  "plugins": ["react-refresh", "prettier", "eslint-plugin-react-compiler"],
   "rules": {
     "prettier/prettier": "error",
     "react-hooks/exhaustive-deps": "off",
+    "react-compiler/react-compiler": "error",
     "react-refresh/only-export-components": [
       "warn",
       { "allowConstantExport": true }
