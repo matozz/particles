@@ -4,12 +4,13 @@ import { useElementStore } from "../stores";
 
 type BindLayoutHook = (layoutId: string, count: number) => void;
 
-export const useBindLayout: BindLayoutHook = (id, count) => {
+export const useBindLayout: BindLayoutHook = (layoutId, count) => {
   const elementMap = useElementStore((state) => state.elementMap);
 
   useEffect(() => {
-    if (elementMap?.size === count) {
-      useElementStore.getState().generate();
+    const layoutElementMap = elementMap.get(layoutId);
+    if (layoutElementMap && layoutElementMap.size === count) {
+      useElementStore.getState().generate(layoutId);
     }
-  }, [id, count, elementMap]);
+  }, [layoutId, count, elementMap]);
 };

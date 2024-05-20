@@ -79,13 +79,20 @@ export type ElementSequencePreset =
   | ElementDynamicStepPreset;
 
 export type ElementStore = {
-  elementMap: Map<string, ElementInfo>;
+  elementMap: Map<string, Map<string, ElementInfo>>;
   presetMap: ElementPresetMap | undefined;
   layoutMap: ElementLayoutMap | undefined;
   bind: ElementBindFn;
   unbind: ElementUnBindFn;
-  generate: () => void;
+  generate: ElementGenerateFn;
 };
 
-export type ElementBindFn = (id: string, elementInfo: ElementInfo) => void;
-export type ElementUnBindFn = (id: string) => void;
+export type ElementBindFn = (
+  layoutId: string,
+  elementId: string,
+  elementInfo: ElementInfo,
+) => void;
+
+export type ElementUnBindFn = (layoutId: string, elementId: string) => void;
+
+export type ElementGenerateFn = (layoutId: string) => void;

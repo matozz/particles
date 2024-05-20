@@ -3,15 +3,12 @@ import {
   useElementStore,
   useRuntimeStore,
 } from "../stores";
-import {
-  getAutoTransition,
-  getBatchDuration,
-  triggerAction,
-} from "../utils/tick_helper";
+import { rafTrigger, stoTrigger } from "../utils/tick_helper";
 import { handleColor } from "./handle_color";
 import { handleRepeat } from "./handle_repeat";
 
 export const handleTick = () => {
+  const triggerMode = useControllerStore.getState().triggerMode;
   const settings = useControllerStore.getState().settings;
   const sequence = useControllerStore.getState().sequence;
   const presetMap = useElementStore.getState().presetMap;
@@ -19,7 +16,7 @@ export const handleTick = () => {
   const { repeat } = settings;
 
   const tick = useRuntimeStore.getState().tick;
-  const addTimeout = useRuntimeStore.getState().addTimeout;
+  const createActiveFrame = useRuntimeStore.getState().createActiveFrame;
 
   if (!presetMap?.[sequence.type]) {
     return;
@@ -38,20 +35,13 @@ export const handleTick = () => {
 
   tick(repeat >= 2 ? repeat : 1);
 
-  const autoTransition = getAutoTransition(settings);
-  const batchDuration = getBatchDuration(settings, actionGroups.length);
-
-  // TODO: Reschedule the unexecuted actions when tempo changed during excuting a actions group
-  // labels: optimization
-  for (const [i, action] of actionGroups.entries()) {
-    if (i === 0) {
-      triggerAction(action, { transition: autoTransition });
-    } else {
-      const timeout = setTimeout(() => {
-        triggerAction(action, { transition: autoTransition });
-      }, batchDuration * i);
-
-      addTimeout(timeout);
-    }
+  if (triggerMode === "sto") {
+    stoTrigger(settings, actionGroups, (timerId) =>
+      createActiveFrame({ type: "sto", timerId }),
+    );
+  } else {
+    rafTrigger(settings, actionGroups, (rafId) =>
+      createActiveFrame({ type: "raf", rafId }),
+    );
   }
 };

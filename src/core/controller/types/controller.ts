@@ -2,6 +2,7 @@ import { SchedulerHookReturn } from "@/core/scheduler";
 
 import { LayoutDirection } from "../constant";
 import { ElementSequenceOptions } from "./element";
+import { ActiveFrameType } from "./runtime";
 
 export type ControllerExtraSetting<T> = { mode: string; data: T };
 
@@ -41,6 +42,7 @@ export type ControllerUpdateColorFn = (
 
 export type ControllerStore = {
   playing: boolean;
+  triggerMode: ActiveFrameType;
   sequence: ControllerSequenceSetting;
   settings: ControllerSettings;
   updateSequence: ControllerUpdateSequenceFn;

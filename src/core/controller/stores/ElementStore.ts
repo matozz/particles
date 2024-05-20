@@ -1,28 +1,59 @@
 import { create } from "zustand";
 
-import { ElementStore } from "../types";
+import { ElementInfo, ElementStore } from "../types";
 import { mergeState } from "../utils/store_common";
 import { getGenerateStates } from "../utils/store_element";
 import { useControllerStore } from "./ControllerStore";
 
-export const useElementStore = create<ElementStore>((set) => ({
-  elementMap: new Map(),
+const initElementState: Pick<ElementStore, "presetMap" | "layoutMap"> = {
   presetMap: undefined,
   layoutMap: undefined,
-  bind: (id, elementInfo) =>
+};
+
+export const useElementStore = create<ElementStore>((set) => ({
+  elementMap: new Map(),
+  ...initElementState,
+  bind: (layoutId, elementId, elementInfo) =>
     set((state) => {
-      const elementMap = new Map(state.elementMap).set(id, elementInfo);
-      return mergeState(state, { elementMap });
+      const updatedOuterMap = new Map(state.elementMap);
+      if (updatedOuterMap.has(layoutId)) {
+        const innerMap = new Map(updatedOuterMap.get(layoutId));
+        innerMap.set(elementId, elementInfo);
+        updatedOuterMap.set(layoutId, innerMap);
+      } else {
+        const newInnerMap = new Map<string, ElementInfo>().set(
+          elementId,
+          elementInfo,
+        );
+        updatedOuterMap.set(layoutId, newInnerMap);
+      }
+      return mergeState(state, { elementMap: updatedOuterMap });
     }),
-  unbind: (id) =>
+  unbind: (layoutId, elementId) =>
     set((state) => {
-      const elementMap = new Map(state.elementMap);
-      elementMap.delete(id);
-      return mergeState(state, { elementMap });
+      if (!state.elementMap.has(layoutId)) {
+        return state;
+      }
+      const updatedOuterMap = new Map(state.elementMap);
+      const innerMap = new Map(updatedOuterMap.get(layoutId));
+
+      innerMap.delete(elementId);
+
+      if (innerMap.size === 0) {
+        updatedOuterMap.delete(layoutId);
+      } else {
+        updatedOuterMap.set(layoutId, innerMap);
+      }
+      return mergeState(state, { elementMap: updatedOuterMap });
     }),
-  generate: () =>
+  generate: (layoutId) =>
     set((state) => {
       const { options } = useControllerStore.getState().sequence;
-      return mergeState(state, getGenerateStates(state.elementMap, options));
+      const layoutElementMap = state.elementMap.get(layoutId);
+
+      if (!layoutElementMap) {
+        return state;
+      }
+      return mergeState(state, getGenerateStates(layoutElementMap, options));
     }),
 }));

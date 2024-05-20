@@ -1,5 +1,6 @@
 export type BaseElementProps = {
+  layoutId: string;
   x: number;
   y: number;
-  dev?: boolean;
+  isDev?: boolean;
 };

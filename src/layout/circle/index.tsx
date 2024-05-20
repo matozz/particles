@@ -14,7 +14,7 @@ interface CircleLayoutProps {
 const CircleLayout: React.FC<CircleLayoutProps> = memo((props) => {
   const { rings, increment, gap = 40 } = props;
 
-  const id = useId();
+  const layoutId = useId();
 
   const calcRings = rings - 1;
 
@@ -26,7 +26,7 @@ const CircleLayout: React.FC<CircleLayoutProps> = memo((props) => {
     return totalElements;
   }, [increment, calcRings]);
 
-  useBindLayout(id, totalElements);
+  useBindLayout(layoutId, totalElements);
 
   const generateElements = useCallback(
     (total: number) => {
@@ -88,9 +88,10 @@ const CircleLayout: React.FC<CircleLayoutProps> = memo((props) => {
           }}
         >
           <SpotlightElement
-            key={`${position.x}-${position.y}`}
             x={position.x}
             y={position.y}
+            key={`${position.x}-${position.y}`}
+            layoutId={layoutId}
           />
         </div>
       ))}
