@@ -1,7 +1,7 @@
 import { useRef, useEffect } from "react";
 
-import { useElementStore } from "../stores";
-import { ElementBindData } from "../types";
+import { useElementStore } from "../stores/element";
+import { ElementBindData } from "../stores/element/types";
 
 type BindElementHook = (
   layoutId: string,

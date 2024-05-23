@@ -1,10 +1,11 @@
-import { LayoutDirection } from "../constant";
+import { LayoutDirection } from "../../constant";
 
 export type ElementBaseState = {
   transition?: number;
   color?: string;
   ease?: [number, number, number, number];
 };
+
 export type ElementCallback = (state: ElementBaseState) => void;
 
 export type ElementBindData = {
@@ -25,6 +26,7 @@ export type ElementSequenceStatic = {
   type: "static";
   sequence: ElementActionGroup[][];
 };
+
 export type ElementSequenceDynamic = {
   type: "dynamic";
   sequence: (() => ElementActionGroup[])[];

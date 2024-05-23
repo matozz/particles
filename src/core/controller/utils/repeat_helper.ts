@@ -1,4 +1,4 @@
-import { ElementActionGroup, ElementSequence } from "../types";
+import { ElementActionGroup, ElementSequence } from "../stores/element/types";
 
 const getStepRepeatIndex = (
   position: number,

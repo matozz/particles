@@ -1,8 +1,5 @@
-import {
-  ControllerSettings,
-  ElementActionGroup,
-  ElementBaseState,
-} from "../types";
+import { ControllerSettings } from "../stores/controller/types";
+import { ElementBaseState, ElementActionGroup } from "../stores/element/types";
 
 export const getAutoTransition = (settings: ControllerSettings) => {
   const { interval, repeat } = settings;

@@ -1,11 +1,9 @@
-import {
-  useControllerStore,
-  useElementStore,
-  useRuntimeStore,
-} from "../stores";
+import { useControllerStore } from "../stores/controller";
+import { useElementStore } from "../stores/element";
+import { useRuntimeStore } from "../stores/runtime";
 import { rafTrigger, stoTrigger } from "../utils/tick_helper";
-import { handleColor } from "./handle_color";
-import { handleRepeat } from "./handle_repeat";
+import { handleColor } from "./color";
+import { handleRepeat } from "./repeat";
 
 export const handleTick = () => {
   const triggerMode = useControllerStore.getState().triggerMode;
@@ -14,6 +12,8 @@ export const handleTick = () => {
   const presetMap = useElementStore.getState().presetMap;
 
   const { repeat } = settings;
+
+  console.log(useRuntimeStore.getState());
 
   const tick = useRuntimeStore.getState().tick;
   const createActiveFrame = useRuntimeStore.getState().createActiveFrame;

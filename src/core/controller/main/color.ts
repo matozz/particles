@@ -1,5 +1,6 @@
-import { useControllerStore, useElementStore } from "../stores";
-import { ElementActionGroup } from "../types";
+import { useControllerStore } from "../stores/controller";
+import { useElementStore } from "../stores/element";
+import { ElementActionGroup } from "../stores/element/types";
 import { getGradientColors } from "../utils/color_helper";
 import { adjustOriginalActionGroups } from "../utils/repeat_helper";
 

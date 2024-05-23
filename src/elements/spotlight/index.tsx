@@ -2,7 +2,8 @@ import { FC, memo, useId, useMemo } from "react";
 
 import { motion, useAnimation } from "framer-motion";
 
-import { ElementBindData, useBindElement } from "@/core/controller";
+import { useBindElement } from "@/core/controller";
+import { ElementBindData } from "@/core/controller/stores/element/types";
 
 import { BaseElementProps } from "../types";
 

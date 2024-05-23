@@ -1,13 +1,8 @@
 import { create } from "zustand";
 
-import { LayoutDirection } from "../constant";
-import { ControllerStore } from "../types";
-import { mergeState } from "../utils/store_common";
-import {
-  getTempoSetting,
-  getExtraSetting,
-  mergeSettings,
-} from "../utils/store_controller";
+import { LayoutDirection } from "../../constant";
+import { ControllerStore } from "./types";
+import { getExtraSetting, getTempoSetting, mergeSettings } from "./utils";
 
 const initControllerState: Pick<ControllerStore, "sequence" | "settings"> = {
   sequence: { type: "flow", options: { density: 0.25 } },
@@ -28,9 +23,9 @@ export const useControllerStore = create<ControllerStore>((set) => ({
   playing: false,
   triggerMode: "raf",
   ...initControllerState,
-  start: () => set((state) => mergeState(state, { playing: true })),
-  stop: () => set((state) => mergeState(state, { playing: false })),
-  updateSequence: (sequence) => set((state) => mergeState(state, { sequence })),
+  start: () => set({ playing: true }),
+  stop: () => set({ playing: false }),
+  updateSequence: (sequence) => set({ sequence }),
   updateSettings: (settings) => set((state) => mergeSettings(state, settings)),
   updateRepeat: (repeat) => set((state) => mergeSettings(state, { repeat })),
   updateTempo: (tempo) =>

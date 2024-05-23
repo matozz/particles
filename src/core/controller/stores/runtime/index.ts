@@ -1,7 +1,6 @@
 import { create } from "zustand";
 
-import { RuntimeStore } from "../types";
-import { mergeState } from "../utils/store_common";
+import { RuntimeStore } from "./types";
 
 const initRuntimeState: Pick<
   RuntimeStore,
@@ -14,15 +13,10 @@ const initRuntimeState: Pick<
 
 export const useRuntimeStore = create<RuntimeStore>((set) => ({
   ...initRuntimeState,
-  setSkipCount: (skipCount) => set((state) => mergeState(state, { skipCount })),
+  setSkipCount: (skipCount) => set({ skipCount }),
   createActiveFrame: (frame) =>
-    set((state) =>
-      mergeState(state, {
-        activeFrames: [...state.activeFrames, frame],
-      }),
-    ),
-  tick: (repeat = 1) =>
-    set((state) => mergeState(state, { position: state.position + repeat })),
+    set((state) => ({ activeFrames: [...state.activeFrames, frame] })),
+  tick: (repeat = 1) => set((state) => ({ position: state.position + repeat })),
   reset: () =>
     set((state) => {
       for (const frame of state.activeFrames) {
@@ -32,6 +26,6 @@ export const useRuntimeStore = create<RuntimeStore>((set) => ({
           clearTimeout(frame.timerId);
         }
       }
-      return mergeState(state, initRuntimeState);
+      return { ...initRuntimeState };
     }),
 }));

@@ -1,4 +1,4 @@
-import { ElementInfo, ElementActionGroup } from "../types";
+import { ElementActionGroup, ElementInfo } from "../stores/element/types";
 
 const precision = 4;
 

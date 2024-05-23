@@ -1,5 +1,8 @@
 import { LayoutDirection } from "../constant";
-import { ElementActionGroup, ElementSequencePreset } from "../types";
+import {
+  ElementActionGroup,
+  ElementSequencePreset,
+} from "../stores/element/types";
 import {
   getRandomArr,
   groupArrayByInterval,
@@ -9,7 +12,7 @@ import {
   getActionGroups,
   groupElementsByAngle,
   groupElementsByDistance,
-} from "../utils/sequence";
+} from "./utils";
 
 export const sequencePresets: Record<string, ElementSequencePreset> = {
   flow: {

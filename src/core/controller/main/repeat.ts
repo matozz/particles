@@ -1,5 +1,6 @@
-import { useControllerStore, useRuntimeStore } from "../stores";
-import { ElementActionGroup, ElementSequence } from "../types";
+import { useControllerStore } from "../stores/controller";
+import { ElementActionGroup, ElementSequence } from "../stores/element/types";
+import { useRuntimeStore } from "../stores/runtime";
 import { getRepeatGroups, getStaticGroups } from "../utils/repeat_helper";
 
 export const handleRepeat = (

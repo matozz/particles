@@ -2,8 +2,9 @@ import { useEffect } from "react";
 
 import { useScheduler } from "@/core/scheduler";
 
-import { useControllerStore, useRuntimeStore } from "../stores";
-import { handleTick } from "./handle_tick";
+import { useControllerStore } from "../stores/controller";
+import { useRuntimeStore } from "../stores/runtime";
+import { handleTick } from "./tick";
 
 export const useGlobalController = () => {
   const playing = useControllerStore((state) => state.playing);

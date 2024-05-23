@@ -1,5 +1,5 @@
 import { LayoutDirection } from "../constant";
-import { ElementInfo, ElementStore } from "../types";
+import { ElementInfo, ElementStore } from "../stores/element/types";
 import { reverseArray } from "./array";
 
 const getLayoutFromElements = (groups: ElementInfo[][]) => {

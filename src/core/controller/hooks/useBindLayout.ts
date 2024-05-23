@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import { useElementStore } from "../stores";
+import { useElementStore } from "../stores/element";
 
 type BindLayoutHook = (layoutId: string, count: number) => void;
 

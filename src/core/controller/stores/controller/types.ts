@@ -1,8 +1,8 @@
 import { SchedulerHookReturn } from "@/core/scheduler";
 
-import { LayoutDirection } from "../constant";
-import { ElementSequenceOptions } from "./element";
-import { ActiveFrameType } from "./runtime";
+import { LayoutDirection } from "../../constant";
+import { ElementSequenceOptions } from "../element/types";
+import { ActiveFrameType } from "../runtime/types";
 
 export type ControllerExtraSetting<T> = { mode: string; data: T };
 

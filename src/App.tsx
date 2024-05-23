@@ -1,10 +1,7 @@
-import { useState } from "react";
+import { FC, useState } from "react";
 
-import {
-  useGlobalController,
-  useControllerStore,
-  sequencePresets,
-} from "./core/controller";
+import { useGlobalController, sequencePresets } from "./core/controller";
+import { useControllerStore } from "./core/controller/stores/controller";
 import { CircleLayout, MatrixLayout } from "./layout";
 
 type Layout =
@@ -16,7 +13,7 @@ const layoutPresets: Record<Layout[keyof Layout], Layout> = {
   circle: { type: "circle", rings: 4, increment: 6 },
 };
 
-function App() {
+const App: FC = () => {
   useGlobalController();
 
   const playing = useControllerStore((state) => state.playing);
@@ -142,6 +139,6 @@ function App() {
       )}
     </div>
   );
-}
+};
 
 export default App;

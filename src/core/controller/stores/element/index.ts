@@ -1,9 +1,8 @@
 import { create } from "zustand";
 
-import { ElementInfo, ElementStore } from "../types";
-import { mergeState } from "../utils/store_common";
-import { getGenerateStates } from "../utils/store_element";
-import { useControllerStore } from "./ControllerStore";
+import { useControllerStore } from "../controller";
+import { ElementInfo, ElementStore } from "./types";
+import { getGenerateStates } from "./utils";
 
 const initElementState: Pick<ElementStore, "presetMap" | "layoutMap"> = {
   presetMap: undefined,
@@ -27,7 +26,7 @@ export const useElementStore = create<ElementStore>((set) => ({
         );
         updatedOuterMap.set(layoutId, newInnerMap);
       }
-      return mergeState(state, { elementMap: updatedOuterMap });
+      return { elementMap: updatedOuterMap };
     }),
   unbind: (layoutId, elementId) =>
     set((state) => {
@@ -44,7 +43,7 @@ export const useElementStore = create<ElementStore>((set) => ({
       } else {
         updatedOuterMap.set(layoutId, innerMap);
       }
-      return mergeState(state, { elementMap: updatedOuterMap });
+      return { elementMap: updatedOuterMap };
     }),
   generate: (layoutId) =>
     set((state) => {
@@ -54,6 +53,6 @@ export const useElementStore = create<ElementStore>((set) => ({
       if (!layoutElementMap) {
         return state;
       }
-      return mergeState(state, getGenerateStates(layoutElementMap, options));
+      return getGenerateStates(layoutElementMap, options);
     }),
 }));

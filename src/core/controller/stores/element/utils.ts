@@ -1,11 +1,11 @@
-import { sequencePresets } from "../sequence";
+import { sequencePresets } from "../../sequence";
+import { getLayoutMap } from "../../utils/layout_generator";
 import {
   ElementInfo,
+  ElementPresetMap,
   ElementSequenceOptions,
   ElementStore,
-  ElementPresetMap,
-} from "../types";
-import { getLayoutMap } from "./layout_generator";
+} from "./types";
 
 export const getGenerateStates = (
   elementMap: Map<string, ElementInfo>,
