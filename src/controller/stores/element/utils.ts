@@ -1,4 +1,9 @@
-import { LayoutDirection } from "@/controller/config";
+import {
+  BaseDirection,
+  RotateDirection,
+  ZoomDirection,
+  layoutCategories,
+} from "@/controller/config";
 import { reverseArray } from "@/controller/utils/array";
 
 import {
@@ -7,7 +12,7 @@ import {
   groupElementsByDiagonal,
   groupElementsByDistance,
 } from "./layout_generator";
-import { Element, ElementStore } from "./types";
+import { Element, ElementLayout, ElementLayoutMap } from "./types";
 
 const getLayoutFromElements = (groups: Element[][]) => {
   const layout: Record<string, number> = {};
@@ -19,76 +24,96 @@ const getLayoutFromElements = (groups: Element[][]) => {
   return layout;
 };
 
-export const getLayoutMap = (elements: Element[]) => {
+const getZoomLayout = (elements: Element[], reverse?: boolean) => {
+  return layoutCategories.zoom.points.reduce<
+    Record<(typeof layoutCategories)["zoom"]["points"][number], ElementLayout>
+  >((acc, cur) => {
+    const data = !reverse
+      ? groupElementsByDistance(elements, cur)
+      : reverseArray(groupElementsByDistance(elements, cur));
+    acc[cur] = {
+      elementArr: data,
+      elementMap: getLayoutFromElements(data),
+      totalLength: data.length,
+    };
+    return acc;
+  }, {} as never);
+};
+
+const getRotateLayout = (elements: Element[], reverse?: boolean) => {
+  return layoutCategories.zoom.points.reduce<
+    Record<(typeof layoutCategories)["rotate"]["points"][number], ElementLayout>
+  >((acc, cur) => {
+    const data = !reverse
+      ? groupElementsByAngle(elements, cur)
+      : reverseArray(groupElementsByAngle(elements, cur));
+    acc[cur] = {
+      elementArr: data,
+      elementMap: getLayoutFromElements(data),
+      totalLength: data.length,
+    };
+    return acc;
+  }, {} as never);
+};
+
+export const getLayoutMap = (elements: Element[]): ElementLayoutMap => {
   const groupAxisX = groupElementsByAxis(elements, "x");
   const groupAxisY = groupElementsByAxis(elements, "y");
   const groupDiagonalTlbr = groupElementsByDiagonal(elements, "tlbr");
   const groupDiagonalBltr = groupElementsByDiagonal(elements, "bltr");
-  const groupCenterEdges = groupElementsByDistance(elements);
-  const groupRotate = groupElementsByAngle(elements);
 
-  const layoutMap: NonNullable<ElementStore["layoutMap"]> = {
-    [LayoutDirection.LeftToRight]: {
+  const flowLayout: ElementLayoutMap["flow"] = {
+    [BaseDirection.LeftRight]: {
       elementArr: groupAxisX,
       elementMap: getLayoutFromElements(groupAxisX),
       totalLength: groupAxisX.length,
     },
-    [LayoutDirection.RightToLeft]: {
+    [BaseDirection.RightLeft]: {
       elementArr: reverseArray(groupAxisX),
       elementMap: getLayoutFromElements(reverseArray(groupAxisX)),
       totalLength: groupAxisX.length,
     },
-    [LayoutDirection.TopToBottom]: {
+    [BaseDirection.TopBottom]: {
       elementArr: groupAxisY,
       elementMap: getLayoutFromElements(groupAxisY),
       totalLength: groupAxisY.length,
     },
-    [LayoutDirection.BottomToTop]: {
+    [BaseDirection.BottomTop]: {
       elementArr: reverseArray(groupAxisY),
       elementMap: getLayoutFromElements(reverseArray(groupAxisY)),
       totalLength: groupAxisY.length,
     },
-    [LayoutDirection.TopLeftToBottomRight]: {
+    [BaseDirection.TopLeftBottomRight]: {
       elementArr: groupDiagonalTlbr,
       elementMap: getLayoutFromElements(groupDiagonalTlbr),
       totalLength: groupDiagonalTlbr.length,
     },
-    [LayoutDirection.BottomRightToTopLeft]: {
+    [BaseDirection.BottomRightTopLeft]: {
       elementArr: reverseArray(groupDiagonalTlbr),
       elementMap: getLayoutFromElements(reverseArray(groupDiagonalTlbr)),
       totalLength: groupDiagonalTlbr.length,
     },
-    [LayoutDirection.BottomLeftToTopRight]: {
+    [BaseDirection.BottomLeftTopRight]: {
       elementArr: groupDiagonalBltr,
       elementMap: getLayoutFromElements(groupDiagonalBltr),
       totalLength: groupDiagonalBltr.length,
     },
-    [LayoutDirection.TopRightToBottomLeft]: {
+    [BaseDirection.TopRightBottomLeft]: {
       elementArr: reverseArray(groupDiagonalBltr),
       elementMap: getLayoutFromElements(reverseArray(groupDiagonalBltr)),
       totalLength: groupDiagonalBltr.length,
     },
-    [LayoutDirection.CenterToEdges]: {
-      elementArr: groupCenterEdges,
-      elementMap: getLayoutFromElements(groupDiagonalBltr),
-      totalLength: groupCenterEdges.length,
-    },
-    [LayoutDirection.EdgesToCenter]: {
-      elementArr: reverseArray(groupCenterEdges),
-      elementMap: getLayoutFromElements(reverseArray(groupCenterEdges)),
-      totalLength: groupCenterEdges.length,
-    },
-    [LayoutDirection.ClockWiseRotate]: {
-      elementArr: groupRotate,
-      elementMap: getLayoutFromElements(groupRotate),
-      totalLength: groupRotate.length,
-    },
-    [LayoutDirection.CounterClockWiseRotate]: {
-      elementArr: reverseArray(groupRotate),
-      elementMap: getLayoutFromElements(reverseArray(groupRotate)),
-      totalLength: groupRotate.length,
-    },
   };
 
-  return layoutMap;
+  const zoomLayout: ElementLayoutMap["zoom"] = {
+    [ZoomDirection.ZoomOut]: getZoomLayout(elements),
+    [ZoomDirection.ZoomIn]: getZoomLayout(elements, true),
+  };
+
+  const rotateLayout: ElementLayoutMap["rotate"] = {
+    [RotateDirection.ClockWise]: getRotateLayout(elements),
+    [RotateDirection.CounterClockWise]: getRotateLayout(elements, true),
+  };
+
+  return { flow: flowLayout, zoom: zoomLayout, rotate: rotateLayout };
 };

@@ -1,6 +1,6 @@
 import { FC, useState } from "react";
 
-import { LayoutDirection, sequencePresets } from "@/controller";
+import { sequencePresets } from "@/controller";
 import {
   setColor,
   setRepeat,
@@ -94,14 +94,7 @@ const Canvas: FC = () => {
             <button
               key={i}
               className={`text-blue-500`}
-              onClick={() =>
-                setColor({
-                  data: {
-                    direction: LayoutDirection.TopToBottom,
-                    colors: preset,
-                  },
-                })
-              }
+              onClick={() => setColor({ data: { colors: preset } })}
             >
               {i + 1}
             </button>

@@ -2,8 +2,6 @@ import { create } from "zustand";
 
 import { subscribeWithSelector } from "zustand/middleware";
 
-import { LayoutDirection } from "@/controller/config";
-
 import { runtimeReset } from "../runtime";
 import {
   ControllerExtraSettings,
@@ -22,7 +20,6 @@ const initialControllerStore: ControllerStore = {
     ...getExtraSetting("color", {
       mode: "gradient-layout",
       data: {
-        direction: LayoutDirection.TopToBottom,
         colors: ["#0000ff", "#800080", "#0000ff"],
       },
     }),

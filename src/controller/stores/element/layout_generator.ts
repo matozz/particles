@@ -1,10 +1,41 @@
+import { BasePoint } from "@/controller/config";
+
 import { Element } from "./types";
 
 const precision = 4;
 
 // layout base utils
 
-export const calculateCentroid = (elements: Element[]) => {
+export const calculateCornerPoints = (elements: Element[]) => {
+  let topLeft = elements[0],
+    bottomLeft = elements[0],
+    topRight = elements[0],
+    bottomRight = elements[0];
+
+  elements.forEach((element) => {
+    if (element.x <= topLeft.x && element.y <= topLeft.y) {
+      topLeft = element;
+    }
+    if (element.x <= bottomLeft.x && element.y >= bottomLeft.y) {
+      bottomLeft = element;
+    }
+    if (element.x >= topRight.x && element.y <= topRight.y) {
+      topRight = element;
+    }
+    if (element.x >= bottomRight.x && element.y >= bottomRight.y) {
+      bottomRight = element;
+    }
+  });
+
+  return {
+    [BasePoint.TopLeft]: topLeft,
+    [BasePoint.BottomLeft]: bottomLeft,
+    [BasePoint.TopRight]: topRight,
+    [BasePoint.BottomRight]: bottomRight,
+  };
+};
+
+export const calculateCentroidPoint = (elements: Element[]) => {
   const sum = elements.reduce(
     (acc, coord) => {
       acc.x += coord.x;
@@ -78,14 +109,20 @@ export const groupElementsByDiagonal = (
     .map((value) => diagonals[Number(value)]);
 };
 
-export const groupElementsByDistance = (elements: Element[]) => {
-  const centroid = calculateCentroid(elements);
+export const groupElementsByDistance = (
+  elements: Element[],
+  pointType: BasePoint.Center | keyof ReturnType<typeof calculateCornerPoints>,
+) => {
+  const point =
+    pointType === BasePoint.Center
+      ? calculateCentroidPoint(elements)
+      : calculateCornerPoints(elements)[pointType];
 
   const distanceGroups = new Map<number, Element[]>();
 
   elements.forEach((element) => {
     const distance = Number(
-      distanceFromCentroid(element, centroid).toFixed(precision),
+      distanceFromCentroid(element, point).toFixed(precision),
     );
     if (!distanceGroups.has(distance)) {
       distanceGroups.set(distance, []);
@@ -100,12 +137,25 @@ export const groupElementsByDistance = (elements: Element[]) => {
   return groupedElements;
 };
 
-export const groupElementsByAngle = (elements: Element[]) => {
-  const centroid = calculateCentroid(elements);
+export const groupElementsByAngle = (
+  elements: Element[],
+  pointType: BasePoint.Center | keyof ReturnType<typeof calculateCornerPoints>,
+) => {
+  const point =
+    pointType === BasePoint.Center
+      ? calculateCentroidPoint(elements)
+      : calculateCornerPoints(elements)[pointType];
+
   const angleGroups = new Map<number, Element[]>();
 
+  let baseElement: Element | undefined;
+
   elements.forEach((element) => {
-    const angle = Number(calculateAngle(element, centroid).toFixed(precision));
+    if (element.x === point.x && element.y === point.y) {
+      baseElement = element;
+      return;
+    }
+    const angle = Number(calculateAngle(element, point).toFixed(precision));
     if (angleGroups.has(angle)) {
       angleGroups.get(angle)?.push(element);
     } else {
@@ -116,6 +166,11 @@ export const groupElementsByAngle = (elements: Element[]) => {
   const groupedElements = Array.from(angleGroups)
     .sort((a, b) => a[0] - b[0])
     .map((group) => group[1]);
+
+  if (baseElement) {
+    groupedElements[0].unshift(baseElement);
+    groupedElements[groupedElements.length - 1].unshift(baseElement);
+  }
 
   return groupedElements;
 };

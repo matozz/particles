@@ -1,4 +1,4 @@
-import { LayoutDirection } from "@/controller/config";
+import { LayoutCategories } from "@/controller/config";
 import { PresetHooks } from "@/controller/sequence/types";
 
 export interface ElementTriggerOptions {
@@ -47,7 +47,20 @@ export interface ElementLayout {
   elementMap: Record<string, number>;
 }
 
-export type ElementLayoutMap = Record<LayoutDirection, ElementLayout>;
+type GenerateLayoutMapType<T> = {
+  [P in keyof T]: T[P] extends {
+    direction: readonly string[];
+    points?: readonly string[];
+  }
+    ? {
+        [D in T[P]["direction"][number]]: T[P]["points"] extends readonly string[]
+          ? { [BP in T[P]["points"][number]]: ElementLayout }
+          : ElementLayout;
+      }
+    : never;
+};
+
+export type ElementLayoutMap = GenerateLayoutMapType<LayoutCategories>;
 
 export interface ElementStore {
   elementMap: Map<string, Map<string, Element>>;

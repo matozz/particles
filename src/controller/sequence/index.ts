@@ -1,4 +1,9 @@
-import { LayoutDirection } from "../config";
+import {
+  BasePoint,
+  BaseDirection,
+  RotateDirection,
+  ZoomDirection,
+} from "../config";
 import { ElementActionGroup } from "../stores/element";
 import { randomArray, chunkArray, transposeArray } from "../utils/array";
 import { ElementSequencePreset } from "./types";
@@ -8,14 +13,14 @@ export const sequencePresets: Record<string, ElementSequencePreset> = {
   flow: {
     type: "static",
     sequence: ({ layoutMap }) => {
-      const layout = layoutMap[LayoutDirection.LeftToRight];
+      const layout = layoutMap.flow[BaseDirection.LeftRight];
       return getElementActionGroups(layout.elementArr);
     },
   },
   flow_step_x_single: {
     type: "static",
     step: ({ layoutMap }) => {
-      const layout = layoutMap[LayoutDirection.TopToBottom];
+      const layout = layoutMap.flow[BaseDirection.TopBottom];
       return layout.elementArr.map((elements) =>
         getElementActionGroups(elements.map((element) => [element])),
       );
@@ -24,7 +29,7 @@ export const sequencePresets: Record<string, ElementSequencePreset> = {
   flow_step_y_single: {
     type: "static",
     step: ({ layoutMap }) => {
-      const layout = layoutMap[LayoutDirection.LeftToRight];
+      const layout = layoutMap.flow[BaseDirection.LeftRight];
       return layout.elementArr.map((elements) =>
         getElementActionGroups(elements.map((element) => [element])),
       );
@@ -36,7 +41,7 @@ export const sequencePresets: Record<string, ElementSequencePreset> = {
   flow_step_y_multi: {
     type: "static",
     step: ({ layoutMap }) => {
-      const layout = layoutMap[LayoutDirection.LeftToRight];
+      const layout = layoutMap.flow[BaseDirection.LeftRight];
       const groups: ElementActionGroup[][] = [];
       const n = 2;
 
@@ -55,7 +60,7 @@ export const sequencePresets: Record<string, ElementSequencePreset> = {
   flow_step_multi: {
     type: "static",
     step: ({ layoutMap }) => {
-      const layout = layoutMap[LayoutDirection.BottomRightToTopLeft];
+      const layout = layoutMap.flow[BaseDirection.BottomRightTopLeft];
       const groups: ElementActionGroup[][] = [];
       const n = 1;
 
@@ -71,8 +76,8 @@ export const sequencePresets: Record<string, ElementSequencePreset> = {
   reverse_flow: {
     type: "static",
     sequence: ({ layoutMap }) => {
-      const layout1 = layoutMap[LayoutDirection.LeftToRight];
-      const layout2 = layoutMap[LayoutDirection.RightToLeft];
+      const layout1 = layoutMap.flow[BaseDirection.LeftRight];
+      const layout2 = layoutMap.flow[BaseDirection.RightLeft];
 
       return getElementActionGroups([
         ...layout1.elementArr,
@@ -86,35 +91,65 @@ export const sequencePresets: Record<string, ElementSequencePreset> = {
   reverse_step_flow: {
     type: "static",
     step: ({ layoutMap }) => {
-      const layout1 = layoutMap[LayoutDirection.LeftToRight];
-      const layout2 = layoutMap[LayoutDirection.RightToLeft];
+      const layout1 = layoutMap.flow[BaseDirection.LeftRight];
+      const layout2 = layoutMap.flow[BaseDirection.RightLeft];
 
-      const groups: ElementActionGroup[][] = [
+      return [
         getElementActionGroups(layout1.elementArr),
         getElementActionGroups(layout2.elementArr),
       ];
-
-      return groups;
     },
   },
-  spread: {
+  reverse_bottom_left_rotate: {
     type: "static",
     sequence: ({ layoutMap }) => {
-      const layout = layoutMap[LayoutDirection.CenterToEdges];
+      const layout1 =
+        layoutMap.rotate[RotateDirection.ClockWise][BasePoint.BottomLeft];
+      const layout2 =
+        layoutMap.rotate[RotateDirection.CounterClockWise][
+          BasePoint.BottomLeft
+        ];
+      return getElementActionGroups([
+        ...layout1.elementArr,
+        ...layout2.elementArr,
+      ]);
+    },
+    hooks: {
+      transformTrigger: createTransformHook({ transitionMultiplier: 0.5 }),
+    },
+  },
+  zoom_out: {
+    type: "static",
+    sequence: ({ layoutMap }) => {
+      const layout = layoutMap.zoom[ZoomDirection.ZoomOut][BasePoint.Center];
       return getElementActionGroups(layout.elementArr);
     },
   },
-  collect: {
+  zoom_out_step_bottom_left: {
+    type: "static",
+    step: ({ layoutMap }) => {
+      const layout1 =
+        layoutMap.zoom[ZoomDirection.ZoomOut][BasePoint.BottomLeft];
+      const layout2 =
+        layoutMap.zoom[ZoomDirection.ZoomOut][BasePoint.BottomRight];
+      return [
+        getElementActionGroups(layout1.elementArr),
+        getElementActionGroups(layout2.elementArr),
+      ];
+    },
+  },
+  zoom_in: {
     type: "static",
     sequence: ({ layoutMap }) => {
-      const layout = layoutMap[LayoutDirection.EdgesToCenter];
+      const layout = layoutMap.zoom[ZoomDirection.ZoomIn][BasePoint.Center];
       return getElementActionGroups(layout.elementArr);
     },
   },
   rotate: {
     type: "static",
     sequence: ({ layoutMap }) => {
-      const layout = layoutMap[LayoutDirection.ClockWiseRotate];
+      const layout =
+        layoutMap.rotate[RotateDirection.ClockWise][BasePoint.Center];
       return getElementActionGroups(layout.elementArr);
     },
   },
@@ -127,7 +162,7 @@ export const sequencePresets: Record<string, ElementSequencePreset> = {
   flash_step_y_multi: {
     type: "static",
     step: ({ layoutMap }) => {
-      const layout = layoutMap[LayoutDirection.LeftToRight];
+      const layout = layoutMap.flow[BaseDirection.LeftRight];
       const groups: ElementActionGroup[][] = [];
       const n = 2;
 

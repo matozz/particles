@@ -1,3 +1,4 @@
+import { BaseDirection } from "../config";
 import { useControllerStore } from "../stores/controller";
 import { useElementStore } from "../stores/element";
 import { ElementActionGroup } from "../stores/element/types";
@@ -12,7 +13,7 @@ export const handleColor = (
 
   const repeat = settings.repeat;
   const colorMode = settings.color.mode;
-  const { direction, colors } = settings.color.data;
+  const { colors } = settings.color.data;
 
   if (colors.length === 0) {
     return actionGroups;
@@ -37,7 +38,7 @@ export const handleColor = (
   }
 
   if (colorMode === "gradient-layout") {
-    const layout = direction ? layoutMap?.[direction] : null;
+    const layout = layoutMap?.flow[BaseDirection.LeftRight];
     if (layout) {
       const gradients = getGradientColors(colors, layout.totalLength);
       return actionGroups.map((action) => ({

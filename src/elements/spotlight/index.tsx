@@ -26,7 +26,7 @@ const SpotlightElement: FC<BaseElementProps> = memo((props) => {
           transition: { duration: 0 },
         });
         controls.start({
-          opacity: [0, 1, 1, 0],
+          opacity: [1, 1, 1, 0],
           transition: { duration, ease: ease || [0, 1, 1, 1] },
         });
       },
