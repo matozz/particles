@@ -5,7 +5,12 @@ import {
   ZoomDirection,
 } from "../config";
 import { ElementActionGroup } from "../stores/element";
-import { randomArray, chunkArray, transposeArray } from "../utils/array";
+import {
+  randomArray,
+  chunkArray,
+  transposeArray,
+  evenlyDistributeArray,
+} from "../utils/array";
 import { ElementSequencePreset } from "./types";
 import { createTransformHook, getElementActionGroups } from "./utils";
 
@@ -15,6 +20,15 @@ export const sequencePresets: Record<string, ElementSequencePreset> = {
     sequence: ({ layoutMap }) => {
       const layout = layoutMap.flow[BaseDirection.LeftRight];
       return getElementActionGroups(layout.elementArr);
+    },
+  },
+  flow_triplet: {
+    type: "static",
+    sequence: ({ layoutMap }) => {
+      const layout = layoutMap.flow[BaseDirection.LeftRight];
+      const intervalArr = evenlyDistributeArray(layout.elementArr, 3);
+      const mergedArr = intervalArr.map((arr) => arr.flat());
+      return getElementActionGroups(mergedArr);
     },
   },
   flow_step_x_single: {
