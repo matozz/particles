@@ -1,14 +1,14 @@
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 
-import App from "./App.tsx";
+import Canvas from "./canvas";
+import GlobalController from "./controller/main";
 
 import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <div>
-    <StrictMode>
-      <App />
-    </StrictMode>
-  </div>,
+  <StrictMode>
+    <GlobalController />
+    <Canvas />
+  </StrictMode>,
 );

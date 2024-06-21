@@ -1,6 +1,6 @@
 import { memo, useCallback, useId } from "react";
 
-import { useBindLayout } from "@/core/controller";
+import { useBindLayout } from "@/controller";
 import SpotlightElement from "@/elements/spotlight";
 
 import "./index.css";
