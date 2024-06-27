@@ -17,6 +17,7 @@ export interface PresetGeneratorConfig {
 
 export interface PresetHooks {
   transformTrigger?: (options: ElementTriggerOptions) => ElementTriggerOptions;
+  transformDuration?: (duration: number) => number;
 }
 
 export interface StaticSequencePreset {
