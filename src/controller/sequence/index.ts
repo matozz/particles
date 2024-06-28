@@ -1,15 +1,18 @@
 import {
-  BasePoint,
   BaseDirection,
+  BasePoint,
   RotateDirection,
   ZoomDirection,
 } from "../config";
 import { ElementActionGroup } from "../stores/element";
 import {
-  randomArray,
   chunkArray,
-  transposeArray,
   evenlyDistributeArray,
+  getRandomAdjacentArrays,
+  interleaveSymmetricArrays,
+  randomArray,
+  reverseArray,
+  transposeArray,
 } from "../utils/array";
 import { ElementSequencePreset } from "./types";
 import { createTransformHook, getElementActionGroups } from "./utils";
@@ -71,6 +74,30 @@ export const sequencePresets: Record<string, ElementSequencePreset> = {
       transformTrigger: createTransformHook({ transitionMultiplier: 2 }),
     },
   },
+  flow_step_y_reverse_multi: {
+    type: "static",
+    step: ({ layoutMap }) => {
+      const layout = layoutMap.flow[BaseDirection.LeftRight];
+      const groups: ElementActionGroup[][] = [];
+      const n = 1;
+
+      const intervalArr = chunkArray(layout.elementArr, n + 1, 2);
+      const transposeArr = intervalArr.map((v) => transposeArray(v));
+
+      for (let i = 0; i < transposeArr.length; i++) {
+        groups.push(
+          getElementActionGroups([
+            ...reverseArray(transposeArr[i]),
+            ...transposeArr[i],
+          ]),
+        );
+      }
+      return groups;
+    },
+    hooks: {
+      transformTrigger: createTransformHook({ transitionMultiplier: 0.5 }),
+    },
+  },
   flow_step_multi: {
     type: "static",
     step: ({ layoutMap }) => {
@@ -112,6 +139,20 @@ export const sequencePresets: Record<string, ElementSequencePreset> = {
         getElementActionGroups(layout1.elementArr),
         getElementActionGroups(layout2.elementArr),
       ];
+    },
+  },
+  reverse_flow_cross: {
+    type: "static",
+    sequence: ({ layoutMap }) => {
+      const layout = layoutMap.flow[BaseDirection.LeftRight];
+
+      return getElementActionGroups(
+        interleaveSymmetricArrays(layout.elementArr),
+      );
+    },
+    hooks: {
+      transformTrigger: createTransformHook({ transitionMultiplier: 0.5 }),
+      transformDuration: (v) => v * 0.8,
     },
   },
   reverse_bottom_left_rotate: {
@@ -200,6 +241,22 @@ export const sequencePresets: Record<string, ElementSequencePreset> = {
     },
     hooks: {
       transformTrigger: createTransformHook({ transitionMultiplier: 2 }),
+    },
+  },
+  flow_random: {
+    type: "dynamic",
+    sequence: ({ layoutMap }) => {
+      const layout = layoutMap.flow[BaseDirection.TopBottom];
+
+      const getGroups = () => {
+        const adjacentArr = getRandomAdjacentArrays(layout.elementArr, 4);
+        return getElementActionGroups(transposeArray(adjacentArr));
+      };
+      return getGroups;
+    },
+    hooks: {
+      transformTrigger: createTransformHook({ transitionMultiplier: 1 }),
+      transformDuration: (v) => v * 0.5,
     },
   },
 };

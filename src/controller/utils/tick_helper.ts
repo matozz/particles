@@ -12,12 +12,15 @@ export const getAutoTransition = (settings: ControllerSettings) => {
 
 export const getBatchDuration = (
   settings: ControllerSettings,
-  groupLength: number,
+  actionGroups: ElementActionGroup[],
 ) => {
   const { interval, repeat } = settings;
-  return repeat > 1
-    ? interval / groupLength
-    : interval / (repeat * groupLength);
+  const { transformDuration } = actionGroups[0].hooks || {};
+  const duration =
+    repeat > 1
+      ? interval / actionGroups.length
+      : interval / (repeat * actionGroups.length);
+  return transformDuration?.(duration) ?? duration;
 };
 
 export const triggerAction = (
@@ -51,7 +54,7 @@ export const stoTrigger = (
   onFrameCreate: (timerId: NodeJS.Timeout) => void,
 ) => {
   const autoTransition = getAutoTransition(settings);
-  const batchDuration = getBatchDuration(settings, actionGroups.length);
+  const batchDuration = getBatchDuration(settings, actionGroups);
 
   for (const [i, action] of actionGroups.entries()) {
     if (i === 0) {
@@ -71,7 +74,7 @@ export const rafTrigger = (
   onFrameCreate: (rafId: number) => void,
 ) => {
   const autoTransition = getAutoTransition(settings);
-  const batchDuration = getBatchDuration(settings, actionGroups.length);
+  const batchDuration = getBatchDuration(settings, actionGroups);
 
   let startTime: number | null = null;
   let lastActionIndex = 0;
