@@ -1,44 +1,46 @@
-import { ControllerSettings } from "../stores/controller/types";
-import {
+import type { ElementSequenceAddon } from "../sequence/types";
+import type { ControllerSettings } from "../stores/controller/types";
+import type {
   ElementTriggerOptions,
-  ElementActionGroup,
+  ElementAction,
+  ElementChain,
 } from "../stores/element/types";
 
-export const getAutoTransition = (settings: ControllerSettings) => {
+export const calculateAutoTransition = (settings: ControllerSettings) => {
   const { interval, repeat } = settings;
   const baseInterval = interval / (repeat * 0.6);
   return Number((baseInterval / 1000).toFixed(3));
 };
 
-export const getBatchDuration = (
+export const calculateBatchDuration = (
   settings: ControllerSettings,
-  actionGroups: ElementActionGroup[],
+  actions: ElementAction[],
 ) => {
   const { interval, repeat } = settings;
-  const { transformDuration } = actionGroups[0].hooks || {};
-  const duration =
-    repeat > 1
-      ? interval / actionGroups.length
-      : interval / (repeat * actionGroups.length);
-  return transformDuration?.(duration) ?? duration;
+
+  return repeat > 1
+    ? interval / actions.length
+    : interval / (repeat * actions.length);
 };
 
-export const triggerAction = (
-  action: ElementActionGroup,
+export const executeAction = (
+  action: ElementAction,
+  addons: ElementSequenceAddon,
   triggerOptions: ElementTriggerOptions,
 ) => {
-  const { groups, hooks } = action;
+  const { group, options: actionOptions } = action;
 
-  for (const element of groups) {
+  for (const element of group) {
     const { transition, color, ease } = element;
 
     let options: ElementTriggerOptions = {
-      transition: transition || action.transition || triggerOptions.transition,
-      color: color || action.color || triggerOptions.color,
+      transition:
+        transition || actionOptions.transition || triggerOptions.transition,
+      color: color || actionOptions.color || triggerOptions.color,
       ease: ease || [0, 1, 0.4, 1],
     };
 
-    const { transformTrigger } = hooks || {};
+    const { transformTrigger } = addons.hooks || {};
 
     if (typeof transformTrigger === "function") {
       options = transformTrigger(options);
@@ -48,33 +50,42 @@ export const triggerAction = (
   }
 };
 
-export const stoTrigger = (
-  settings: ControllerSettings,
-  actionGroups: ElementActionGroup[],
-  onFrameCreate: (timerId: NodeJS.Timeout) => void,
-) => {
-  const autoTransition = getAutoTransition(settings);
-  const batchDuration = getBatchDuration(settings, actionGroups);
+export const timeoutTrigger = (options: {
+  settings: ControllerSettings;
+  chain: ElementChain;
+  onFrameCreate: (timerId: NodeJS.Timeout) => void;
+}) => {
+  const { settings, chain, onFrameCreate } = options;
 
-  for (const [i, action] of actionGroups.entries()) {
+  const { actions, ...addons } = chain;
+
+  const autoTransition = calculateAutoTransition(settings);
+  const batchDuration = calculateBatchDuration(settings, actions);
+
+  for (const [i, action] of actions.entries()) {
     if (i === 0) {
-      triggerAction(action, { transition: autoTransition });
+      executeAction(action, addons, { transition: autoTransition });
     } else {
-      const timerId = setTimeout(() => {
-        triggerAction(action, { transition: autoTransition });
-      }, batchDuration * i);
+      const timerId = setTimeout(
+        () => executeAction(action, addons, { transition: autoTransition }),
+        batchDuration * i,
+      );
       onFrameCreate(timerId);
     }
   }
 };
 
-export const rafTrigger = (
-  settings: ControllerSettings,
-  actionGroups: ElementActionGroup[],
-  onFrameCreate: (rafId: number) => void,
-) => {
-  const autoTransition = getAutoTransition(settings);
-  const batchDuration = getBatchDuration(settings, actionGroups);
+export const requestAnimationFrameTrigger = (options: {
+  settings: ControllerSettings;
+  chain: ElementChain;
+  onFrameCreate: (rafId: number) => void;
+}) => {
+  const { settings, chain, onFrameCreate } = options;
+
+  const { actions, ...addons } = chain;
+
+  const autoTransition = calculateAutoTransition(settings);
+  const batchDuration = calculateBatchDuration(settings, actions);
 
   let startTime: number | null = null;
   let lastActionIndex = 0;
@@ -89,15 +100,15 @@ export const rafTrigger = (
 
     while (
       lastActionIndex <= nextActionIndex &&
-      lastActionIndex < actionGroups.length
+      lastActionIndex < actions.length
     ) {
-      triggerAction(actionGroups[lastActionIndex], {
+      executeAction(actions[lastActionIndex], addons, {
         transition: autoTransition,
       });
       lastActionIndex++;
     }
 
-    if (lastActionIndex < actionGroups.length) {
+    if (lastActionIndex < actions.length) {
       const rafId = requestAnimationFrame(callback);
       onFrameCreate(rafId);
     }

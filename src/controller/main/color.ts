@@ -1,13 +1,11 @@
 import { BaseDirection } from "../config";
 import { useControllerStore } from "../stores/controller";
 import { useElementStore } from "../stores/element";
-import { ElementActionGroup } from "../stores/element/types";
-import { getGradientColors } from "../utils/color_helper";
-import { adjustOriginalActionGroups } from "../utils/repeat_helper";
+import type { ElementChain } from "../stores/element/types";
+import { generateGradientColors } from "../utils/color_helper";
+import { filterOriginalActions } from "../utils/repeat_helper";
 
-export const handleColor = (
-  actionGroups: ElementActionGroup[],
-): ElementActionGroup[] => {
+export const handleColor = (chain: ElementChain): ElementChain => {
   const settings = useControllerStore.getState().settings;
   const layoutMap = useElementStore.getState().layoutMap;
 
@@ -16,40 +14,48 @@ export const handleColor = (
   const { colors } = settings.color.data;
 
   if (colors.length === 0) {
-    return actionGroups;
+    return chain;
   }
 
-  const defaultActions = actionGroups.map((action) => ({
+  const { actions } = chain;
+
+  const defaultActions = actions.map((action) => ({
     ...action,
-    color: colors[0],
+    options: { color: colors[0] },
   }));
 
   if (colors.length === 1) {
-    return defaultActions;
+    return { ...chain, actions: defaultActions };
   }
 
   if (colorMode === "gradient-auto") {
-    const groups = adjustOriginalActionGroups(actionGroups, repeat);
-    const gradients = getGradientColors(colors, groups.length, repeat);
-    return actionGroups.map((action, i) => ({
+    const fileredActions = filterOriginalActions(actions, repeat);
+    const gradients = generateGradientColors(
+      colors,
+      fileredActions.length,
+      repeat,
+    );
+    const newActions = actions.map((action, i) => ({
       ...action,
-      color: gradients[i],
+      options: { color: gradients[i] },
     }));
+    return { ...chain, actions: newActions };
   }
 
   if (colorMode === "gradient-layout") {
     const layout = layoutMap?.flow[BaseDirection.LeftRight];
     if (layout) {
-      const gradients = getGradientColors(colors, layout.totalLength);
-      return actionGroups.map((action) => ({
+      const gradients = generateGradientColors(colors, layout.totalLength);
+      const newActions = actions.map((action) => ({
         ...action,
-        groups: action.groups.map((group) => {
-          const colorIdx = layout.elementMap[group.id] ?? 0;
-          return { ...group, color: gradients[colorIdx] };
+        group: action.group.map((element) => {
+          const colorIdx = layout.elementMap[element.id] ?? 0;
+          return { ...element, color: gradients[colorIdx] };
         }),
       }));
+      return { ...chain, actions: newActions };
     }
   }
 
-  return defaultActions;
+  return { ...chain, actions: defaultActions };
 };

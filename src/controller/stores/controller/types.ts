@@ -1,8 +1,9 @@
-import { PresetExtraOptions } from "@/controller/sequence/types";
-
-import { AnimationFrameType } from "../runtime/types";
+import type { PresetExtraOptions } from "@/controller/sequence/types";
+import type { AnimationFrame } from "../runtime/types";
 
 export type ControllerExtraSetting<T> = { mode: string; data: T };
+
+export type ControllerTriggerMode = AnimationFrame["type"];
 
 export interface ControllerExtraSettings {
   color: ControllerExtraSetting<{
@@ -22,8 +23,8 @@ export interface ControllerSequenceSetting {
 }
 
 export interface ControllerStore {
-  playing: boolean;
-  triggerMode: AnimationFrameType;
+  isPlaying: boolean;
+  triggerMode: ControllerTriggerMode;
   sequence: ControllerSequenceSetting;
   settings: ControllerSettings;
 }

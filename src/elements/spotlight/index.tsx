@@ -1,12 +1,8 @@
-import { FC, memo, useId, useMemo } from "react";
-
+import { type FC, memo, useId, useMemo } from "react";
 import { motion, useAnimation } from "framer-motion";
-
 import { useBindElement } from "@/controller";
-import { ElementBind } from "@/controller/stores/element";
-
-import { BaseElementProps } from "../types";
-
+import type { ElementBase } from "@/controller/stores/element/types";
+import type { BaseElementProps } from "../types";
 import "./index.css";
 
 const SpotlightElement: FC<BaseElementProps> = memo((props) => {
@@ -16,7 +12,7 @@ const SpotlightElement: FC<BaseElementProps> = memo((props) => {
 
   const elementId = useId();
 
-  const elementInfo = useMemo<ElementBind>(
+  const elementInfo = useMemo<ElementBase>(
     () => ({
       x,
       y,

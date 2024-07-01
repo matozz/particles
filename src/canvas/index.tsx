@@ -1,13 +1,12 @@
-import { FC, useState } from "react";
-
+import { type FC, useState } from "react";
 import { sequencePresets } from "@/controller";
 import {
-  setColor,
-  setRepeat,
-  setSequence,
-  setTempo,
-  startController,
-  stopController,
+  updateColorSetting,
+  updateRepeatCount,
+  updateSequence,
+  updateTempo,
+  activateController,
+  deactivateController,
   useControllerStore,
 } from "@/controller/stores/controller";
 import { CircleLayout, MatrixLayout } from "@/layout";
@@ -29,7 +28,7 @@ const colorPresets = [
 ];
 
 const Canvas: FC = () => {
-  const playing = useControllerStore((state) => state.playing);
+  const isPlaying = useControllerStore((state) => state.isPlaying);
   const sequence = useControllerStore((state) => state.sequence);
   const settings = useControllerStore((state) => state.settings);
   const triggerMode = useControllerStore((state) => state.triggerMode);
@@ -54,20 +53,20 @@ const Canvas: FC = () => {
       <div className="flex gap-5">
         <button
           className="text-blue-500 underline"
-          onClick={playing ? stopController : startController}
+          onClick={isPlaying ? deactivateController : activateController}
         >
-          {playing ? "Pause" : "Play"}
+          {isPlaying ? "Pause" : "Play"}
         </button>
         <div className="text-white">{settings.tempo}</div>
         <button
           className="text-blue-500 underline"
-          onClick={() => setTempo(settings.tempo - 10)}
+          onClick={() => updateTempo(settings.tempo - 10)}
         >
           -
         </button>
         <button
           className="text-blue-500 underline"
-          onClick={() => setTempo(settings.tempo + 10)}
+          onClick={() => updateTempo(settings.tempo + 10)}
         >
           +
         </button>
@@ -80,7 +79,7 @@ const Canvas: FC = () => {
             key={type}
             disabled={type === sequence.type}
             className={`text-blue-500 ${type === sequence.type ? "underline" : ""}`}
-            onClick={() => setSequence({ type })}
+            onClick={() => updateSequence({ type })}
           >
             {type}
           </button>
@@ -94,7 +93,7 @@ const Canvas: FC = () => {
             <button
               key={i}
               className={`text-blue-500`}
-              onClick={() => setColor({ data: { colors: preset } })}
+              onClick={() => updateColorSetting({ data: { colors: preset } })}
             >
               {i + 1}
             </button>
@@ -107,7 +106,7 @@ const Canvas: FC = () => {
               key={mode}
               disabled={mode === settings.color.mode}
               className={`text-blue-500 ${mode === settings.color.mode ? "underline" : ""}`}
-              onClick={() => setColor({ mode })}
+              onClick={() => updateColorSetting({ mode })}
             >
               {mode}
             </button>
@@ -120,7 +119,7 @@ const Canvas: FC = () => {
               key={repeat}
               disabled={repeat === settings.repeat}
               className={`text-blue-500 ${repeat === settings.repeat ? "underline" : ""}`}
-              onClick={() => setRepeat(repeat)}
+              onClick={() => updateRepeatCount(repeat)}
             >
               {repeat}
             </button>

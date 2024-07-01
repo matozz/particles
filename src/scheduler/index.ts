@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
-
 import SchedulerWorker from "./scheduler.worker?worker&inline";
-import { SchedulerHook } from "./types";
+import type { SchedulerHook } from "./types";
 
 export const useScheduler: SchedulerHook = (interval, onTick) => {
   const worker = useRef<Worker>(undefined);

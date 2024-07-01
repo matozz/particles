@@ -1,19 +1,13 @@
-import {
-  ElementActionGroup,
+import type {
   Element,
   ElementLayoutMap,
   ElementPresetMap,
   ElementTriggerOptions,
-} from "../stores/element";
-import { PresetExtraOptions } from "./types";
-
+} from "../stores/element/types";
+import type { PresetExtraOptions } from "./types";
 import { sequencePresets } from ".";
 
-export const getElementActionGroups = (
-  groups: Element[][],
-): ElementActionGroup[] => groups.map((v) => ({ groups: v }));
-
-export const getPresetMap = (
+export const generatePresetMap = (
   elements: Element[],
   layoutMap: ElementLayoutMap,
   options?: PresetExtraOptions,
@@ -25,30 +19,42 @@ export const getPresetMap = (
       if ("sequence" in preset) {
         acc[key] = {
           type: preset.type,
-          data: [preset.sequence?.({ elements, layoutMap, options })],
+          data: {
+            groups: [preset.sequence?.({ elements, layoutMap, options })],
+          },
         };
       } else {
         acc[key] = {
           type: preset.type,
-          data: preset.step?.({ elements, layoutMap, options }),
+          data: {
+            groups: preset.step?.({ elements, layoutMap, options }),
+          },
         };
       }
     } else {
       if ("sequence" in preset) {
         acc[key] = {
           type: preset.type,
-          data: [preset.sequence?.({ elements, layoutMap, options })],
+          data: {
+            groups: [preset.sequence?.({ elements, layoutMap, options })],
+          },
         };
       } else {
         acc[key] = {
           type: preset.type,
-          data: preset.step?.({ elements, layoutMap, options }),
+          data: {
+            groups: preset.step?.({ elements, layoutMap, options }),
+          },
         };
       }
     }
 
     if (preset.hooks && Object.keys(preset.hooks).length > 0) {
-      acc[key].hooks = preset.hooks;
+      acc[key].data.hooks = preset.hooks;
+    }
+
+    if (preset.options && Object.keys(preset.options).length > 0) {
+      acc[key].data.options = preset.options;
     }
 
     return acc;

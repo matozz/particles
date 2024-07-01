@@ -1,33 +1,32 @@
 import { useRef, useEffect } from "react";
-
-import { bindElement, unbindElement } from "../stores/element";
-import { ElementBind, ElementBindCallback } from "../stores/element/types";
+import { bindElementToLayout, unbindElementToLayout } from "../stores/element";
+import type { ElementBase, ElementCallback } from "../stores/element/types";
 
 type BindElementHook = (
   layoutId: string,
   elementId: string,
-  elementInfo: ElementBind,
+  element: ElementBase,
 ) => void;
 
 export const useBindElement: BindElementHook = (
   layoutId,
   elementId,
-  elementInfo,
+  element,
 ) => {
   const isMountedRef = useRef(false);
 
   useEffect(() => {
     isMountedRef.current = true;
 
-    const { callback, ...rest } = elementInfo;
+    const { callback, ...rest } = element;
 
-    const elementCallback: ElementBindCallback = (state) => {
+    const elementCallback: ElementCallback = (state) => {
       if (isMountedRef.current) {
         callback(state);
       }
     };
 
-    bindElement(layoutId, elementId, {
+    bindElementToLayout(layoutId, elementId, {
       ...rest,
       id: elementId,
       callback: elementCallback,
@@ -35,7 +34,7 @@ export const useBindElement: BindElementHook = (
 
     return () => {
       isMountedRef.current = false;
-      unbindElement(layoutId, elementId);
+      unbindElementToLayout(layoutId, elementId);
     };
-  }, [layoutId, elementId, elementInfo]);
+  }, [layoutId, elementId, element]);
 };

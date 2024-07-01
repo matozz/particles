@@ -7,6 +7,10 @@ export enum BaseDirection {
   TopRightBottomLeft = "trbl",
   BottomLeftTopRight = "bltr",
   BottomRightTopLeft = "brtl",
+  CenterLeftRight = "clr",
+  CenterTopBottom = "ctb",
+  LeftRightCenter = "lrc",
+  TopBottomCenter = "tbc",
 }
 
 export enum BasePoint {
@@ -45,6 +49,10 @@ export const layoutCategories = {
       BaseDirection.BottomRightTopLeft,
       BaseDirection.TopLeftBottomRight,
       BaseDirection.TopRightBottomLeft,
+      BaseDirection.CenterLeftRight,
+      BaseDirection.LeftRightCenter,
+      BaseDirection.CenterTopBottom,
+      BaseDirection.TopBottomCenter,
     ] as const,
   },
   zoom: {

@@ -1,6 +1,5 @@
 import { useEffect } from "react";
-
-import { generateLayout, useElementStore } from "../stores/element";
+import { generateLayoutMappings, useElementStore } from "../stores/element";
 
 type BindLayoutHook = (layoutId: string, count: number) => void;
 
@@ -10,7 +9,7 @@ export const useBindLayout: BindLayoutHook = (layoutId, count) => {
   useEffect(() => {
     const layoutElementMap = elementMap.get(layoutId);
     if (layoutElementMap && layoutElementMap.size === count) {
-      generateLayout(layoutId);
+      generateLayoutMappings(layoutId);
     }
   }, [layoutId, count, elementMap]);
 };

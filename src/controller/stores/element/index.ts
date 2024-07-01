@@ -1,10 +1,8 @@
 import { create } from "zustand";
-
-import { getPresetMap } from "@/controller/sequence/utils";
-
+import { generatePresetMap } from "@/controller/sequence/utils";
 import { useControllerStore } from "../controller";
-import { Element, ElementStore } from "./types";
-import { getLayoutMap } from "./utils";
+import type { Element, ElementStore } from "./types";
+import { generateLayoutMap } from "./utils";
 
 const initialElementStore: ElementStore = {
   presetMap: undefined,
@@ -16,7 +14,7 @@ export const useElementStore = create<ElementStore>(() => ({
   ...initialElementStore,
 }));
 
-export const bindElement = (
+export const bindElementToLayout = (
   layoutId: string,
   elementId: string,
   elementInfo: Element,
@@ -37,7 +35,7 @@ export const bindElement = (
   useElementStore.setState({ elementMap: updatedOuterMap });
 };
 
-export const unbindElement = (layoutId: string, elementId: string) => {
+export const unbindElementToLayout = (layoutId: string, elementId: string) => {
   const { elementMap } = useElementStore.getState();
 
   if (!elementMap.has(layoutId)) {
@@ -57,7 +55,7 @@ export const unbindElement = (layoutId: string, elementId: string) => {
   useElementStore.setState({ elementMap: updatedOuterMap });
 };
 
-export const generateLayout = (layoutId: string) => {
+export const generateLayoutMappings = (layoutId: string) => {
   const { sequence } = useControllerStore.getState();
   const { elementMap } = useElementStore.getState();
 
@@ -71,8 +69,8 @@ export const generateLayout = (layoutId: string) => {
 
   const elements = Array.from(layoutElementMap.values());
 
-  const layoutMap = getLayoutMap(elements);
-  const presetMap = getPresetMap(elements, layoutMap, options);
+  const layoutMap = generateLayoutMap(elements);
+  const presetMap = generatePresetMap(elements, layoutMap, options);
 
   console.log("generating new elements...", elementMap);
   console.log("generating new presets...", presetMap);
@@ -80,5 +78,3 @@ export const generateLayout = (layoutId: string) => {
 
   useElementStore.setState({ layoutMap, presetMap });
 };
-
-export * from "./types";

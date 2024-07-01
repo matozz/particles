@@ -1,23 +1,25 @@
 import { create } from "zustand";
-
 import { subscribeWithSelector } from "zustand/middleware";
-
-import { runtimeReset } from "../runtime";
-import {
+import { resetRuntime } from "../runtime";
+import type {
   ControllerExtraSettings,
   ControllerSequenceSetting,
   ControllerStore,
 } from "./types";
-import { getExtraSetting, getTempoSetting, mergeSettings } from "./utils";
+import {
+  generateExtraSetting,
+  generateTempoSetting,
+  mergeSettings,
+} from "./utils";
 
 const initialControllerStore: ControllerStore = {
-  playing: false,
+  isPlaying: false,
   triggerMode: "raf",
   sequence: { type: "flow", options: { density: 0.25 } },
   settings: {
     repeat: 1,
-    ...getTempoSetting(128),
-    ...getExtraSetting("color", {
+    ...generateTempoSetting(128),
+    ...generateExtraSetting("color", {
       mode: "gradient-layout",
       data: {
         colors: ["#0000ff", "#800080", "#0000ff"],
@@ -31,32 +33,32 @@ export const useControllerStore = create(
 );
 
 useControllerStore.subscribe(
-  (state) => state.playing,
-  (playing) => {
-    if (!playing) {
-      runtimeReset();
+  (state) => state.isPlaying,
+  (isPlaying) => {
+    if (!isPlaying) {
+      resetRuntime();
     }
   },
 );
 
-export const startController = () =>
-  useControllerStore.setState({ playing: true });
+export const activateController = () =>
+  useControllerStore.setState({ isPlaying: true });
 
-export const stopController = () =>
-  useControllerStore.setState({ playing: false });
+export const deactivateController = () =>
+  useControllerStore.setState({ isPlaying: false });
 
-export const setSequence = (sequence: ControllerSequenceSetting) =>
+export const updateSequence = (sequence: ControllerSequenceSetting) =>
   useControllerStore.setState({ sequence });
 
-export const setRepeat = (repeat: number) =>
+export const updateRepeatCount = (repeat: number) =>
   useControllerStore.setState((state) => mergeSettings(state, { repeat }));
 
-export const setTempo = (tempo: number) =>
+export const updateTempo = (tempo: number) =>
   useControllerStore.setState((state) =>
-    mergeSettings(state, getTempoSetting(tempo)),
+    mergeSettings(state, generateTempoSetting(tempo)),
   );
 
-export const setColor = (
+export const updateColorSetting = (
   setting: Partial<ControllerExtraSettings["color"]>,
 ) => {
   const { mode, data } = setting;
@@ -66,7 +68,7 @@ export const setColor = (
     const newData = data || color.data;
     return mergeSettings(
       state,
-      getExtraSetting("color", { mode: newMode, data: newData }),
+      generateExtraSetting("color", { mode: newMode, data: newData }),
     );
   });
 };

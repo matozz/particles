@@ -1,6 +1,5 @@
 import { BasePoint } from "@/controller/config";
-
-import { Element } from "./types";
+import type { Element } from "./types";
 
 const precision = 4;
 

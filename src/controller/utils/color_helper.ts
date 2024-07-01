@@ -1,8 +1,7 @@
 import Color from "color";
-
 import { repeatArray } from "./array";
 
-export const getGradientColors = (
+export const generateGradientColors = (
   colors: string[],
   num: number,
   repeat = 1,

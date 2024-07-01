@@ -1,88 +1,131 @@
-import { PresetHooks } from "../sequence/types";
-import { ElementActionGroup, ElementSequence } from "../stores/element/types";
+import type { ElementSequenceAddon, PresetOptions } from "../sequence/types";
+import type {
+  ElementAction,
+  ElementChain,
+  ElementGroup,
+  ElementSequence,
+} from "../stores/element/types";
 
-export const applyPresetHooks = (
-  groups: ElementActionGroup[],
-  hooks: PresetHooks,
-) => groups.map((group) => ({ ...group, hooks }));
+export const applyChainAddons = (
+  actions: ElementAction[],
+  addons: ElementSequenceAddon,
+) => {
+  const result: ElementChain = { actions };
+  if (addons.hooks && Object.keys(addons.hooks).length > 0) {
+    result.hooks = addons.hooks;
+  }
+  if (addons.options && Object.keys(addons.options).length > 0) {
+    result.options = addons.options;
+  }
+  return result;
+};
 
-const getStepRepeatIndex = (
-  beats: number,
-  repeat: number,
-  groupLength: number,
-) => (((beats - 1) % groupLength) + repeat) % groupLength;
+export const appendTrailingBlanks = (
+  options: PresetOptions | undefined,
+  finalGroups: ElementGroup[],
+  len?: number,
+) => {
+  const { trailingBlanksN } = options || {};
 
-export const getRepeatGroups = (
+  if (trailingBlanksN) {
+    const trailings = Math.floor((len || finalGroups.length) * trailingBlanksN);
+    for (let i = 0; i < trailings; i++) {
+      finalGroups.push([]);
+    }
+  }
+};
+
+const calculateRepeatIndex = (beats: number, repeat: number, len: number) =>
+  (((beats - 1) % len) + repeat) % len;
+
+export const getRepeatedActions = (
   sequence: ElementSequence,
   beats: number,
   repeat: number,
-) => {
-  const { type, data, hooks } = sequence;
+): ElementChain => {
+  const { type, data } = sequence;
+  const { hooks, options } = data;
 
-  let groups: ElementActionGroup[] = [];
+  const finalGroups: ElementGroup[] = [];
+
+  const addGroups = (groups: ElementGroup[], length: number) => {
+    groups.forEach((group) => finalGroups.push(group));
+    appendTrailingBlanks(options, finalGroups, length);
+  };
 
   if (type === "static") {
-    if (data.length > 1) {
+    if (data.groups.length > 1) {
       for (let i = 0; i < repeat; i++) {
-        const idx = getStepRepeatIndex(beats, i, data.length);
-        data[idx].forEach((item) => groups.push(item));
+        const idx = calculateRepeatIndex(beats, i, data.groups.length);
+        addGroups(data.groups[idx], data.groups[idx].length);
       }
     } else {
       for (let i = 0; i < repeat; i++) {
-        data[0].forEach((item) => groups.push(item));
+        addGroups(data.groups[0], data.groups[0].length);
       }
     }
   } else {
-    if (data.length > 1) {
+    if (data.groups.length > 1) {
       for (let i = 0; i < repeat; i++) {
-        const idx = getStepRepeatIndex(beats, i, data.length);
-        const newGroups = data[idx]();
-        newGroups.forEach((item) => groups.push(item));
+        const idx = calculateRepeatIndex(beats, i, data.groups.length);
+        const newGroups = data.groups[idx]();
+        addGroups(newGroups, newGroups.length);
       }
     } else {
       for (let i = 0; i < repeat; i++) {
-        const newGroups = data[0]();
-        newGroups.forEach((item) => groups.push(item));
+        const newGroups = data.groups[0]();
+        addGroups(newGroups, newGroups.length);
       }
     }
   }
 
-  if (hooks && Object.keys(hooks).length > 0) {
-    groups = applyPresetHooks(groups, hooks);
-  }
+  const actions: ElementAction[] = finalGroups.map((group) => ({
+    group,
+    options: {},
+  }));
 
-  return groups;
+  return applyChainAddons(actions, { hooks, options });
 };
 
-export const getStaticGroups = (sequence: ElementSequence, beats: number) => {
-  const { type, data, hooks } = sequence;
+export const getDefaultActions = (
+  sequence: ElementSequence,
+  beats: number,
+): ElementChain => {
+  const { type, data } = sequence;
+  const { hooks, options } = data;
 
-  let groups: ElementActionGroup[] = [];
+  const groupsLength = data.groups.length;
+
+  let finalGroups: ElementGroup[] = [];
 
   if (type === "static") {
-    if (data.length > 1) {
-      const idx = (beats - 1) % data.length;
-      groups = data[idx];
+    if (groupsLength > 1) {
+      const idx = (beats - 1) % groupsLength;
+      finalGroups = [...data.groups[idx]];
     } else {
-      groups = data[0];
+      finalGroups = [...data.groups[0]];
     }
   } else {
-    if (data.length > 1) {
-      const idx = (beats - 1) % data.length;
-      groups = data[idx]();
+    if (groupsLength > 1) {
+      const idx = (beats - 1) % groupsLength;
+      finalGroups = [...data.groups[idx]()];
     } else {
-      groups = data[0]();
+      finalGroups = [...data.groups[0]()];
     }
   }
 
-  if (hooks && Object.keys(hooks).length > 0) {
-    groups = applyPresetHooks(groups, hooks);
-  }
+  // Addon options
+  appendTrailingBlanks(options, finalGroups);
 
-  return groups;
+  const actions: ElementAction[] = finalGroups.map((group) => ({
+    group,
+    options: {},
+  }));
+
+  return applyChainAddons(actions, { hooks, options });
 };
 
-export const adjustOriginalActionGroups = (
-  groups: ElementActionGroup[],
+export const filterOriginalActions = (
+  actions: ElementAction[],
   repeat: number,
-) => groups.slice(0, groups.length / repeat);
+) => actions.slice(0, actions.length / repeat);
