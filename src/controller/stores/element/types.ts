@@ -1,5 +1,5 @@
-import { LayoutCategories } from "@/controller/config";
-import { PresetHooks } from "@/controller/sequence/types";
+import type { LayoutCategories } from "@/controller/config";
+import type { ElementSequenceAddon } from "@/controller/sequence/types";
 
 export interface ElementTriggerOptions {
   transition?: number;
@@ -7,37 +7,40 @@ export interface ElementTriggerOptions {
   ease?: [number, number, number, number];
 }
 
-export type ElementBindCallback = (options: ElementTriggerOptions) => void;
+export type ElementCallback = (options: ElementTriggerOptions) => void;
 
-export interface ElementBind {
+export interface ElementBase {
   x: number;
   y: number;
-  callback: ElementBindCallback;
+  callback: ElementCallback;
 }
 
-export interface Element extends ElementBind {
+export interface Element extends ElementBase {
   id: string;
 }
 
-export interface ElementActionGroup extends ElementTriggerOptions {
-  groups: Array<Element & ElementTriggerOptions>;
-  hooks?: PresetHooks;
+export type ElementGroup = Array<Element & ElementTriggerOptions>;
+
+export interface ElementAction {
+  group: ElementGroup;
+  options: ElementTriggerOptions;
+}
+
+export interface ElementChain extends ElementSequenceAddon {
+  actions: ElementAction[];
 }
 
 export interface ElementSequenceStatic {
   type: "static";
-  data: ElementActionGroup[][];
+  data: { groups: ElementGroup[][] } & ElementSequenceAddon;
 }
 
 export interface ElementSequenceDynamic {
   type: "dynamic";
-  data: Array<() => ElementActionGroup[]>;
+  data: { groups: Array<() => ElementGroup[]> } & ElementSequenceAddon;
 }
 
-export type ElementSequence = (
-  | ElementSequenceStatic
-  | ElementSequenceDynamic
-) & { hooks?: PresetHooks };
+export type ElementSequence = ElementSequenceStatic | ElementSequenceDynamic;
 
 export type ElementPresetMap = Record<string, ElementSequence>;
 
@@ -47,7 +50,7 @@ export interface ElementLayout {
   elementMap: Record<string, number>;
 }
 
-type GenerateLayoutMapType<T> = {
+type GenerateLayoutMap<T> = {
   [P in keyof T]: T[P] extends {
     direction: readonly string[];
     points?: readonly string[];
@@ -60,7 +63,7 @@ type GenerateLayoutMapType<T> = {
     : never;
 };
 
-export type ElementLayoutMap = GenerateLayoutMapType<LayoutCategories>;
+export type ElementLayoutMap = GenerateLayoutMap<LayoutCategories>;
 
 export interface ElementStore {
   elementMap: Map<string, Map<string, Element>>;

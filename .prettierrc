@@ -11,7 +11,7 @@
         "classnames",
         "twMerge"
     ],
-    "importOrderSeparation": true,
+    "importOrderSeparation": false,
     "importOrderCaseInsensitive": true,
     "importOrder": [
         "^react",

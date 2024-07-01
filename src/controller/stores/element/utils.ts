@@ -5,16 +5,15 @@ import {
   layoutCategories,
 } from "@/controller/config";
 import { reverseArray } from "@/controller/utils/array";
-
 import {
   groupElementsByAngle,
   groupElementsByAxis,
   groupElementsByDiagonal,
   groupElementsByDistance,
 } from "./layout_generator";
-import { Element, ElementLayout, ElementLayoutMap } from "./types";
+import type { Element, ElementLayout, ElementLayoutMap } from "./types";
 
-const getLayoutFromElements = (groups: Element[][]) => {
+const generateElementMap = (groups: Element[][]) => {
   const layout: Record<string, number> = {};
   groups.forEach((group, i) => {
     for (const element of group) {
@@ -24,7 +23,7 @@ const getLayoutFromElements = (groups: Element[][]) => {
   return layout;
 };
 
-const getZoomLayout = (elements: Element[], reverse?: boolean) => {
+const generateZoomLayout = (elements: Element[], reverse?: boolean) => {
   return layoutCategories.zoom.points.reduce<
     Record<(typeof layoutCategories)["zoom"]["points"][number], ElementLayout>
   >((acc, cur) => {
@@ -33,14 +32,14 @@ const getZoomLayout = (elements: Element[], reverse?: boolean) => {
       : reverseArray(groupElementsByDistance(elements, cur));
     acc[cur] = {
       elementArr: data,
-      elementMap: getLayoutFromElements(data),
+      elementMap: generateElementMap(data),
       totalLength: data.length,
     };
     return acc;
   }, {} as never);
 };
 
-const getRotateLayout = (elements: Element[], reverse?: boolean) => {
+const generateRotateLayout = (elements: Element[], reverse?: boolean) => {
   return layoutCategories.zoom.points.reduce<
     Record<(typeof layoutCategories)["rotate"]["points"][number], ElementLayout>
   >((acc, cur) => {
@@ -49,70 +48,75 @@ const getRotateLayout = (elements: Element[], reverse?: boolean) => {
       : reverseArray(groupElementsByAngle(elements, cur));
     acc[cur] = {
       elementArr: data,
-      elementMap: getLayoutFromElements(data),
+      elementMap: generateElementMap(data),
       totalLength: data.length,
     };
     return acc;
   }, {} as never);
 };
 
-export const getLayoutMap = (elements: Element[]): ElementLayoutMap => {
+const generateFlowLayout = (elements: Element[]): ElementLayoutMap["flow"] => {
   const groupAxisX = groupElementsByAxis(elements, "x");
   const groupAxisY = groupElementsByAxis(elements, "y");
   const groupDiagonalTlbr = groupElementsByDiagonal(elements, "tlbr");
   const groupDiagonalBltr = groupElementsByDiagonal(elements, "bltr");
 
-  const flowLayout: ElementLayoutMap["flow"] = {
-    [BaseDirection.LeftRight]: {
-      elementArr: groupAxisX,
-      elementMap: getLayoutFromElements(groupAxisX),
-      totalLength: groupAxisX.length,
-    },
-    [BaseDirection.RightLeft]: {
-      elementArr: reverseArray(groupAxisX),
-      elementMap: getLayoutFromElements(reverseArray(groupAxisX)),
-      totalLength: groupAxisX.length,
-    },
-    [BaseDirection.TopBottom]: {
-      elementArr: groupAxisY,
-      elementMap: getLayoutFromElements(groupAxisY),
-      totalLength: groupAxisY.length,
-    },
-    [BaseDirection.BottomTop]: {
-      elementArr: reverseArray(groupAxisY),
-      elementMap: getLayoutFromElements(reverseArray(groupAxisY)),
-      totalLength: groupAxisY.length,
-    },
-    [BaseDirection.TopLeftBottomRight]: {
-      elementArr: groupDiagonalTlbr,
-      elementMap: getLayoutFromElements(groupDiagonalTlbr),
-      totalLength: groupDiagonalTlbr.length,
-    },
-    [BaseDirection.BottomRightTopLeft]: {
-      elementArr: reverseArray(groupDiagonalTlbr),
-      elementMap: getLayoutFromElements(reverseArray(groupDiagonalTlbr)),
-      totalLength: groupDiagonalTlbr.length,
-    },
-    [BaseDirection.BottomLeftTopRight]: {
-      elementArr: groupDiagonalBltr,
-      elementMap: getLayoutFromElements(groupDiagonalBltr),
-      totalLength: groupDiagonalBltr.length,
-    },
-    [BaseDirection.TopRightBottomLeft]: {
-      elementArr: reverseArray(groupDiagonalBltr),
-      elementMap: getLayoutFromElements(reverseArray(groupDiagonalBltr)),
-      totalLength: groupDiagonalBltr.length,
-    },
+  const createFlowDirectionLayout = <
+    T extends BaseDirection,
+    R extends BaseDirection,
+  >(
+    elementGroups: Element[][],
+    baseDirection: T,
+    reverseDirection: R,
+  ): { [K in T | R]: ElementLayout } =>
+    ({
+      [baseDirection]: {
+        elementArr: elementGroups,
+        elementMap: generateElementMap(elementGroups),
+        totalLength: elementGroups.length,
+      },
+      [reverseDirection]: {
+        elementArr: reverseArray(elementGroups),
+        elementMap: generateElementMap(reverseArray(elementGroups)),
+        totalLength: elementGroups.length,
+      },
+    }) as { [K in T | R]: ElementLayout };
+
+  return {
+    ...createFlowDirectionLayout(
+      groupAxisX,
+      BaseDirection.LeftRight,
+      BaseDirection.RightLeft,
+    ),
+    ...createFlowDirectionLayout(
+      groupAxisY,
+      BaseDirection.TopBottom,
+      BaseDirection.BottomTop,
+    ),
+    ...createFlowDirectionLayout(
+      groupDiagonalTlbr,
+      BaseDirection.TopLeftBottomRight,
+      BaseDirection.BottomRightTopLeft,
+    ),
+    ...createFlowDirectionLayout(
+      groupDiagonalBltr,
+      BaseDirection.BottomLeftTopRight,
+      BaseDirection.TopRightBottomLeft,
+    ),
   };
+};
+
+export const generateLayoutMap = (elements: Element[]): ElementLayoutMap => {
+  const flowLayout: ElementLayoutMap["flow"] = generateFlowLayout(elements);
 
   const zoomLayout: ElementLayoutMap["zoom"] = {
-    [ZoomDirection.ZoomOut]: getZoomLayout(elements),
-    [ZoomDirection.ZoomIn]: getZoomLayout(elements, true),
+    [ZoomDirection.ZoomOut]: generateZoomLayout(elements),
+    [ZoomDirection.ZoomIn]: generateZoomLayout(elements, true),
   };
 
   const rotateLayout: ElementLayoutMap["rotate"] = {
-    [RotateDirection.ClockWise]: getRotateLayout(elements),
-    [RotateDirection.CounterClockWise]: getRotateLayout(elements, true),
+    [RotateDirection.ClockWise]: generateRotateLayout(elements),
+    [RotateDirection.CounterClockWise]: generateRotateLayout(elements, true),
   };
 
   return { flow: flowLayout, zoom: zoomLayout, rotate: rotateLayout };

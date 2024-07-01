@@ -1,8 +1,6 @@
-import { memo, useCallback, useId } from "react";
-
+import { type FC, memo, useCallback, useId } from "react";
 import { useBindLayout } from "@/controller";
 import SpotlightElement from "@/elements/spotlight";
-
 import "./index.css";
 
 interface MatrixLayoutProps {
@@ -10,7 +8,7 @@ interface MatrixLayoutProps {
   columns: number;
 }
 
-const MatrixLayout: React.FC<MatrixLayoutProps> = memo((props) => {
+const MatrixLayout: FC<MatrixLayoutProps> = memo((props) => {
   const { rows, columns } = props;
 
   const layoutId = useId();

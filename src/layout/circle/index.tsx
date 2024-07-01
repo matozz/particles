@@ -1,8 +1,6 @@
-import { memo, useCallback, useId, useMemo } from "react";
-
+import { type FC, memo, useCallback, useId, useMemo } from "react";
 import { useBindLayout } from "@/controller";
 import SpotlightElement from "@/elements/spotlight";
-
 import "./index.css";
 
 interface CircleLayoutProps {
@@ -11,7 +9,7 @@ interface CircleLayoutProps {
   gap?: number;
 }
 
-const CircleLayout: React.FC<CircleLayoutProps> = memo((props) => {
+const CircleLayout: FC<CircleLayoutProps> = memo((props) => {
   const { rings, increment, gap = 40 } = props;
 
   const layoutId = useId();

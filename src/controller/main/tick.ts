@@ -1,7 +1,10 @@
 import { useControllerStore } from "../stores/controller";
 import { useElementStore } from "../stores/element";
-import { appendAnimationFrame, runtimeTick } from "../stores/runtime";
-import { rafTrigger, stoTrigger } from "../utils/tick_helper";
+import { addAnimationFrame, incrementBeats } from "../stores/runtime";
+import {
+  requestAnimationFrameTrigger,
+  timeoutTrigger,
+} from "../utils/tick_helper";
 import { handleColor } from "./color";
 import { handleRepeat } from "./repeat";
 
@@ -17,23 +20,30 @@ export const handleTick = () => {
 
   // TODO: Sample element groups with excessively short trigger
 
-  let actionGroups = handleRepeat(presetMap[sequence.type]);
-  actionGroups = handleColor(actionGroups);
+  let chain = handleRepeat(presetMap[sequence.type]);
 
-  // skip tick if `actionGroups` is empty
-  if (actionGroups.length === 0) {
+  // skip tick if `actions` is empty
+  if (chain.actions.length === 0) {
     return;
   }
 
-  runtimeTick(repeat >= 2 ? repeat : 1);
+  chain = handleColor(chain);
+
+  // console.log(chain);
+
+  incrementBeats(repeat >= 2 ? repeat : 1);
 
   if (triggerMode === "sto") {
-    stoTrigger(settings, actionGroups, (timerId) =>
-      appendAnimationFrame({ type: "sto", timerId }),
-    );
+    timeoutTrigger({
+      settings,
+      chain,
+      onFrameCreate: (timerId) => addAnimationFrame({ type: "sto", timerId }),
+    });
   } else {
-    rafTrigger(settings, actionGroups, (rafId) =>
-      appendAnimationFrame({ type: "raf", rafId }),
-    );
+    requestAnimationFrameTrigger({
+      settings,
+      chain,
+      onFrameCreate: (rafId) => addAnimationFrame({ type: "raf", rafId }),
+    });
   }
 };
