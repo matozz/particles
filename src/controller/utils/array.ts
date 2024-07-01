@@ -11,6 +11,16 @@ export const repeatArray = <T>(arr: T[], n: number) => {
   return result;
 };
 
+export const splitArray = <T>(arr: T[]) => {
+  const quotient = Math.floor(arr.length / 2);
+  const remainder = arr.length % 2; // 1 or 0
+
+  const leftArr = arr.slice(0, quotient + remainder);
+  const rightArr = arr.slice(quotient, arr.length);
+
+  return [leftArr, rightArr];
+};
+
 export const transposeArray = <T>(matrix: T[][]) => {
   if (matrix.length === 0) {
     return [];
@@ -113,5 +123,20 @@ export const getRandomAdjacentArrays = <T>(arr: T[][], n: number) => {
     const extractedArr = row.slice(startIndex, startIndex + n);
     result.push(extractedArr);
   }
+  return result;
+};
+
+export const mergeDimensionArrays = <T>(arrays: T[][][]) => {
+  const totalLength = arrays[0].length;
+  const result: T[][] = arrays[0];
+
+  for (let i = 0; i < arrays.length; i++) {
+    for (let j = 0; j < totalLength; j++) {
+      let mergedArray = result[j];
+      mergedArray = mergedArray.concat(arrays[i][j]);
+      result[j] = mergedArray;
+    }
+  }
+
   return result;
 };

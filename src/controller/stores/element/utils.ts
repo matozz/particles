@@ -4,7 +4,11 @@ import {
   ZoomDirection,
   layoutCategories,
 } from "@/controller/config";
-import { reverseArray } from "@/controller/utils/array";
+import {
+  mergeDimensionArrays,
+  reverseArray,
+  splitArray,
+} from "@/controller/utils/array";
 import {
   groupElementsByAngle,
   groupElementsByAxis,
@@ -61,6 +65,9 @@ const generateFlowLayout = (elements: Element[]): ElementLayoutMap["flow"] => {
   const groupDiagonalTlbr = groupElementsByDiagonal(elements, "tlbr");
   const groupDiagonalBltr = groupElementsByDiagonal(elements, "bltr");
 
+  const splitAxisX = splitArray(groupAxisX);
+  const splitAxisY = splitArray(groupAxisY);
+
   const createFlowDirectionLayout = <
     T extends BaseDirection,
     R extends BaseDirection,
@@ -102,6 +109,16 @@ const generateFlowLayout = (elements: Element[]): ElementLayoutMap["flow"] => {
       groupDiagonalBltr,
       BaseDirection.BottomLeftTopRight,
       BaseDirection.TopRightBottomLeft,
+    ),
+    ...createFlowDirectionLayout(
+      mergeDimensionArrays([reverseArray(splitAxisX[0]), splitAxisX[1]]),
+      BaseDirection.CenterLeftRight,
+      BaseDirection.LeftRightCenter,
+    ),
+    ...createFlowDirectionLayout(
+      mergeDimensionArrays([reverseArray(splitAxisY[0]), splitAxisY[1]]),
+      BaseDirection.CenterTopBottom,
+      BaseDirection.TopBottomCenter,
     ),
   };
 };

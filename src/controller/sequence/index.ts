@@ -25,6 +25,13 @@ export const sequencePresets: Record<string, ElementSequencePreset> = {
       return layout.elementArr;
     },
   },
+  flow_spread: {
+    type: "static",
+    sequence: ({ layoutMap }) => {
+      const layout = layoutMap.flow[BaseDirection.CenterLeftRight];
+      return layout.elementArr;
+    },
+  },
   flow_triplet: {
     type: "static",
     sequence: ({ layoutMap }) => {
