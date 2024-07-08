@@ -1,4 +1,5 @@
 import Color from "color";
+import type { ElementAction } from "../stores/element/types";
 import { repeatArray } from "./array";
 
 export const generateGradientColors = (
@@ -33,3 +34,11 @@ export const generateGradientColors = (
 
   return gradients;
 };
+
+export const pickActionColors = (
+  colorGroups: string[][],
+  action: ElementAction,
+) =>
+  colorGroups.length === 1
+    ? colorGroups[0]
+    : colorGroups[(action.beats - 1) % colorGroups.length];

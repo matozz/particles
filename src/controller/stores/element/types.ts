@@ -24,6 +24,7 @@ export type ElementGroup = Array<Element & ElementTriggerOptions>;
 export interface ElementAction {
   group: ElementGroup;
   options: ElementTriggerOptions;
+  beats: number;
 }
 
 export interface ElementChain extends ElementSequenceAddon {

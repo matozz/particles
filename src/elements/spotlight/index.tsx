@@ -1,43 +1,20 @@
-import { type FC, memo, useId, useMemo } from "react";
-import { motion, useAnimation } from "framer-motion";
-import { useBindElement } from "@/controller";
-import type { ElementBase } from "@/controller/stores/element/types";
+import { type FC, memo, useId } from "react";
+import { motion } from "framer-motion";
+import { useBindElementWithAnimation } from "@/controller";
 import type { BaseElementProps } from "../types";
-import "./index.css";
 
 const SpotlightElement: FC<BaseElementProps> = memo((props) => {
   const { layoutId, x, y, isDev } = props;
 
-  const controls = useAnimation();
-
   const elementId = useId();
 
-  const elementInfo = useMemo<ElementBase>(
-    () => ({
-      x,
-      y,
-      callback: ({ transition: duration, color, ease }) => {
-        controls.start({
-          backgroundColor: color,
-          transition: { duration: 0 },
-        });
-        controls.start({
-          opacity: [1, 1, 1, 0],
-          transition: { duration, ease: ease || [0, 1, 1, 1] },
-        });
-      },
-    }),
-    [x, y],
-  );
-
-  useBindElement(layoutId, elementId, elementInfo);
+  const controls = useBindElementWithAnimation(layoutId, elementId, { x, y });
 
   return (
-    <div className="spotlight-element relative flex h-8 w-8 items-center justify-center rounded-full bg-[#111] p-2">
+    <div className="shadow-light relative flex h-8 w-8 items-center justify-center rounded-full bg-[#111] p-2">
       <motion.div
-        initial={{ opacity: 0 }}
         animate={controls}
-        className="spotlight-color absolute inset-0 box-border flex h-full w-full items-center justify-center rounded-full text-xs text-white"
+        className="absolute inset-0 box-border flex h-full w-full items-center justify-center rounded-full text-xs text-black"
       />
       {isDev && (
         <div className="absolute inset-0 flex items-center justify-center text-xs text-gray-500">{`${Math.round(x)},${Math.round(y)}`}</div>

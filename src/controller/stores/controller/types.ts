@@ -6,9 +6,7 @@ export type ControllerExtraSetting<T> = { mode: string; data: T };
 export type ControllerTriggerMode = AnimationFrame["type"];
 
 export interface ControllerExtraSettings {
-  color: ControllerExtraSetting<{
-    colors: string[];
-  }>;
+  color: ControllerExtraSetting<string[][]>;
 }
 
 export interface ControllerSettings extends ControllerExtraSettings {

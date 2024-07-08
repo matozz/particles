@@ -203,6 +203,15 @@ export const sequencePresets: Record<string, ElementSequencePreset> = {
       return [elements];
     },
   },
+  flash_color: {
+    type: "static",
+    sequence: ({ elements }) => {
+      return [
+        elements.map((element) => ({ ...element, color: "#ff0000" })),
+        elements.map((element) => ({ ...element, color: "#0000ff" })),
+      ];
+    },
+  },
   flash_step_y_multi: {
     type: "static",
     step: ({ layoutMap }) => {
@@ -223,7 +232,7 @@ export const sequencePresets: Record<string, ElementSequencePreset> = {
     sequence: ({ elements, options }) => {
       const { density = 0.25 } = options || {};
       const getGroups = () => {
-        const num = Math.round(elements.length / (1 / density));
+        const num = Math.round(elements.length * density);
         return [randomArray(elements, num)];
       };
       return getGroups;
