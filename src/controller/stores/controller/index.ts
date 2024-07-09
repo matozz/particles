@@ -21,9 +21,12 @@ const initialControllerStore: ControllerStore = {
     ...generateTempoSetting(128),
     ...generateExtraSetting("color", {
       mode: "gradient-layout",
-      data: {
-        colors: ["#0000ff", "#800080", "#0000ff"],
-      },
+      data: [
+        // ["#0000ff", "#800080", "#0000ff"],
+        ["#ff0000", "#ff691c"],
+        ["#00f2ff", "#0061ff"],
+        // [],
+      ],
     }),
   },
 };

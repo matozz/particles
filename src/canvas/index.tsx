@@ -21,7 +21,7 @@ const layoutPresets: Record<Layout[keyof Layout], Layout> = {
 };
 
 const colorPresets = [
-  ["#0000ff", "#800080", "#0000ff"],
+  ["#3b82f6", "#800080", "#3b82f6"],
   ["#ff0000", "#ff691c", "#ff0000"],
   ["#36ff00", "#bf00ff"],
   ["#00f2ff", "#0061ff"],
@@ -93,7 +93,7 @@ const Canvas: FC = () => {
             <button
               key={i}
               className={`text-blue-500`}
-              onClick={() => updateColorSetting({ data: { colors: preset } })}
+              onClick={() => updateColorSetting({ data: [preset] })}
             >
               {i + 1}
             </button>
@@ -114,7 +114,7 @@ const Canvas: FC = () => {
         </div>
         <div className="flex flex-wrap gap-2">
           <div className="text-white">{`repeater: `}</div>
-          {[0.25, 0.5, 1, 2, 3].map((repeat) => (
+          {[0.25, 0.5, 1, 2, 3, 4].map((repeat) => (
             <button
               key={repeat}
               disabled={repeat === settings.repeat}

@@ -38,6 +38,12 @@ export const appendTrailingBlanks = (
 const calculateRepeatIndex = (beats: number, repeat: number, len: number) =>
   (((beats - 1) % len) + repeat) % len;
 
+const getBeatsOffsetByIndex = (repeat: number, index: number, len: number) => {
+  const target = len / repeat;
+  const multiplier = Math.ceil(index / target);
+  return multiplier - 1;
+};
+
 export const getRepeatedActions = (
   sequence: ElementSequence,
   beats: number,
@@ -79,9 +85,10 @@ export const getRepeatedActions = (
     }
   }
 
-  const actions: ElementAction[] = finalGroups.map((group) => ({
+  const actions = finalGroups.map<ElementAction>((group, i) => ({
     group,
     options: {},
+    beats: beats + getBeatsOffsetByIndex(repeat, i + 1, finalGroups.length),
   }));
 
   return applyChainAddons(actions, { hooks, options });
@@ -117,9 +124,10 @@ export const getDefaultActions = (
   // Addon options
   appendTrailingBlanks(options, finalGroups);
 
-  const actions: ElementAction[] = finalGroups.map((group) => ({
+  const actions = finalGroups.map<ElementAction>((group) => ({
     group,
     options: {},
+    beats,
   }));
 
   return applyChainAddons(actions, { hooks, options });

@@ -78,7 +78,7 @@ const CircleLayout: FC<CircleLayoutProps> = memo((props) => {
       {generateElements(totalElements).map((position, index) => (
         <div
           key={index}
-          className="circle-element absolute"
+          className="absolute"
           style={{
             left: `calc(50% + ${position.x}px)`,
             top: `calc(50% + ${position.y}px)`,
