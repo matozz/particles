@@ -211,6 +211,9 @@ export const sequencePresets: Record<string, ElementSequencePreset> = {
         elements.map((element) => ({ ...element, color: "#0000ff" })),
       ];
     },
+    hooks: {
+      transformTrigger: createTransformHook({ transitionMultiplier: 2 }),
+    },
   },
   flash_step_y_multi: {
     type: "static",

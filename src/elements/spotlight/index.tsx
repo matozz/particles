@@ -11,7 +11,7 @@ const SpotlightElement: FC<BaseElementProps> = memo((props) => {
   const controls = useBindElementWithAnimation(layoutId, elementId, { x, y });
 
   return (
-    <div className="shadow-light relative flex h-8 w-8 items-center justify-center rounded-full bg-[#111] p-2">
+    <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-[#111] p-2 shadow-light">
       <motion.div
         animate={controls}
         className="absolute inset-0 box-border flex h-full w-full items-center justify-center rounded-full text-xs text-black"
