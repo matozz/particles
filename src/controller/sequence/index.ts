@@ -92,12 +92,15 @@ export const sequencePresets: Record<string, ElementSequencePreset> = {
       const transposeArr = intervalArr.map((v) => transposeArray(v));
 
       for (let i = 0; i < transposeArr.length; i++) {
-        groups.push([...reverseArray(transposeArr[i]), ...transposeArr[i]]);
+        groups.push([
+          ...reverseArray(transposeArr[i]),
+          ...transposeArr[i].slice(1),
+        ]);
       }
       return groups;
     },
     hooks: {
-      transformTrigger: createTransformHook({ transitionMultiplier: 0.5 }),
+      transformTrigger: createTransformHook({ transitionMultiplier: 0.8 }),
     },
   },
   flow_step_multi: {
@@ -210,6 +213,9 @@ export const sequencePresets: Record<string, ElementSequencePreset> = {
         elements.map((element) => ({ ...element, color: "#ff0000" })),
         elements.map((element) => ({ ...element, color: "#0000ff" })),
       ];
+    },
+    hooks: {
+      transformTrigger: createTransformHook({ transitionMultiplier: 2 }),
     },
   },
   flash_step_y_multi: {
