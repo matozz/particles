@@ -92,12 +92,15 @@ export const sequencePresets: Record<string, ElementSequencePreset> = {
       const transposeArr = intervalArr.map((v) => transposeArray(v));
 
       for (let i = 0; i < transposeArr.length; i++) {
-        groups.push([...reverseArray(transposeArr[i]), ...transposeArr[i]]);
+        groups.push([
+          ...reverseArray(transposeArr[i]),
+          ...transposeArr[i].slice(1),
+        ]);
       }
       return groups;
     },
     hooks: {
-      transformTrigger: createTransformHook({ transitionMultiplier: 0.5 }),
+      transformTrigger: createTransformHook({ transitionMultiplier: 0.8 }),
     },
   },
   flow_step_multi: {
