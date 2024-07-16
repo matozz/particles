@@ -32,6 +32,15 @@ export const sequencePresets: Record<string, ElementSequencePreset> = {
       return layout.elementArr;
     },
   },
+  flow_double: {
+    type: "static",
+    sequence: ({ layoutMap }) => {
+      const layout = layoutMap.flow[BaseDirection.LeftRight];
+      const intervalArr = evenlyDistributeArray(layout.elementArr, 2);
+      const mergedArr = intervalArr.map((arr) => arr.flat());
+      return mergedArr;
+    },
+  },
   flow_triplet: {
     type: "static",
     sequence: ({ layoutMap }) => {
