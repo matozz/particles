@@ -40,6 +40,7 @@ const Canvas: FC = () => {
   const triggerMode = useControllerStore((state) => state.triggerMode);
 
   const track = usePlaylistStore((state) => state.track);
+  const beats = usePlaylistStore((state) => state.beats);
 
   const [layout, setLayout] = useState<Layout>(layoutPresets.matrix);
 
@@ -74,6 +75,8 @@ const Canvas: FC = () => {
         )}
 
         {track?.name && <div className="text-white">Track: {track?.name}</div>}
+        <div className="text-white">Current: {beats}</div>
+
         <button
           className="text-blue-500 underline"
           onClick={isPlaying ? deactivateController : activateController}

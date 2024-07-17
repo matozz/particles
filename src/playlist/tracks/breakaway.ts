@@ -15,6 +15,69 @@ export const Breakaway: Track = {
         },
       },
       {
+        start: 3,
+        duration: 12,
+        settings: {
+          sequence: { type: "flash" },
+          color: { mode: "static", data: [["#36ff00"]] },
+          repeat: 2,
+        },
+      },
+      {
+        start: 4,
+        duration: 12,
+        settings: {
+          sequence: { type: "flash" },
+          color: { mode: "static", data: [["#36ff00"]] },
+          repeat: 1,
+        },
+      },
+      {
+        start: 7,
+        duration: 12,
+        settings: {
+          sequence: { type: "flash" },
+          color: { mode: "static", data: [["#36ff00"]] },
+          repeat: 2,
+        },
+      },
+      {
+        start: 8,
+        duration: 12,
+        settings: {
+          sequence: { type: "flash" },
+          color: { mode: "static", data: [["#36ff00"]] },
+          repeat: 1,
+        },
+      },
+      {
+        start: 11,
+        duration: 12,
+        settings: {
+          sequence: { type: "flash" },
+          color: { mode: "static", data: [["#36ff00"]] },
+          repeat: 2,
+        },
+      },
+      {
+        start: 12,
+        duration: 12,
+        settings: {
+          sequence: { type: "flash" },
+          color: { mode: "static", data: [["#36ff00"]] },
+          repeat: 1,
+        },
+      },
+      {
+        start: 15,
+        duration: 12,
+        settings: {
+          sequence: { type: "flash" },
+          color: { mode: "static", data: [["#36ff00"]] },
+          repeat: 2,
+        },
+      },
+      {
         start: 16,
         duration: 12,
         settings: {
@@ -28,6 +91,15 @@ export const Breakaway: Track = {
         duration: 12,
         settings: {
           sequence: { type: "flick" },
+          color: { mode: "static", data: [["#bf00ff"]] },
+          repeat: 4,
+        },
+      },
+      {
+        start: 28,
+        duration: 12,
+        settings: {
+          sequence: { type: "flash" },
           color: { mode: "static", data: [["#bf00ff"]] },
           repeat: 4,
         },
@@ -185,6 +257,7 @@ export const Breakaway: Track = {
           repeat: 1,
         },
       },
+      // END
       {
         start: 64,
         duration: 12,
