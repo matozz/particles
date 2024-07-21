@@ -9,6 +9,12 @@ import {
   deactivateController,
   useControllerStore,
 } from "@/controller/stores/controller";
+import {
+  loadTrack,
+  stopPlaylist,
+  unloadTrack,
+  usePlaylistStore,
+} from "@/controller/stores/playlist";
 import { CircleLayout, MatrixLayout } from "@/layout";
 
 type Layout =
@@ -33,6 +39,9 @@ const Canvas: FC = () => {
   const settings = useControllerStore((state) => state.settings);
   const triggerMode = useControllerStore((state) => state.triggerMode);
 
+  const track = usePlaylistStore((state) => state.track);
+  const beats = usePlaylistStore((state) => state.beats);
+
   const [layout, setLayout] = useState<Layout>(layoutPresets.matrix);
 
   const getRandomLayout = () => {
@@ -51,6 +60,23 @@ const Canvas: FC = () => {
     <div className="flex h-screen flex-col items-center justify-center gap-5 bg-[#111] p-10">
       <div className="text-white">{`[mode]: ${triggerMode}`}</div>
       <div className="flex gap-5">
+        <button className="text-blue-500 underline" onClick={stopPlaylist}>
+          STOP
+        </button>
+
+        {track ? (
+          <button className="text-blue-500 underline" onClick={unloadTrack}>
+            UNLOAD
+          </button>
+        ) : (
+          <button className="text-blue-500 underline" onClick={loadTrack}>
+            LOAD
+          </button>
+        )}
+
+        {track?.name && <div className="text-white">Track: {track?.name}</div>}
+        <div className="text-white">Current: {beats}</div>
+
         <button
           className="text-blue-500 underline"
           onClick={isPlaying ? deactivateController : activateController}

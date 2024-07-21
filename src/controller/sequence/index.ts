@@ -32,11 +32,29 @@ export const sequencePresets: Record<string, ElementSequencePreset> = {
       return layout.elementArr;
     },
   },
+  flow_double: {
+    type: "static",
+    sequence: ({ layoutMap }) => {
+      const layout = layoutMap.flow[BaseDirection.LeftRight];
+      const intervalArr = evenlyDistributeArray(layout.elementArr, 2);
+      const mergedArr = intervalArr.map((arr) => arr.flat());
+      return mergedArr;
+    },
+  },
   flow_triplet: {
     type: "static",
     sequence: ({ layoutMap }) => {
       const layout = layoutMap.flow[BaseDirection.LeftRight];
       const intervalArr = evenlyDistributeArray(layout.elementArr, 3);
+      const mergedArr = intervalArr.map((arr) => arr.flat());
+      return mergedArr;
+    },
+  },
+  flow_quadruple: {
+    type: "static",
+    sequence: ({ layoutMap }) => {
+      const layout = layoutMap.flow[BaseDirection.LeftRight];
+      const intervalArr = evenlyDistributeArray(layout.elementArr, 4);
       const mergedArr = intervalArr.map((arr) => arr.flat());
       return mergedArr;
     },
@@ -230,6 +248,22 @@ export const sequencePresets: Record<string, ElementSequencePreset> = {
         const flatArr = intervalArr[i].flat();
         groups.push([flatArr]);
       }
+      return groups;
+    },
+  },
+  step_multi: {
+    type: "static",
+    step: ({ layoutMap }) => {
+      const layout = layoutMap.flow[BaseDirection.BottomRightTopLeft];
+      const groups: ElementGroup[][] = [];
+      const n = 1;
+
+      const intervalArr = chunkArray(layout.elementArr, n + 1);
+
+      for (let i = 0; i < intervalArr.length; i++) {
+        groups.push([intervalArr[i].flat()]);
+      }
+
       return groups;
     },
   },
